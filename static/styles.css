@@ -1,0 +1,97 @@
+/* Shared styling for all pages */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Open Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f7;
+    height: 100vh;
+    width: 100vw;
+}
+
+.full-height-container { /* For the login page container */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+}
+
+.container {
+    margin: 0 auto;
+    padding: 2rem;
+    max-width: 600px;
+}
+
+/* Navbar styles */
+.navbar {
+    background-color: #333;
+    padding: 1rem;
+    text-align: center;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 1.2rem;
+}
+
+.navbar a:hover {
+    color: #0071e3;
+}
+
+/* Login page specific styles */
+.login-container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+form input {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    background-color: #f5f5f7;
+}
+
+form button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #0071e3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #005bb5;
+}
+
+/* Styling for the error message */
+.error {
+    background-color: #ffebee; /* Light red background for error */
+    color: #d32f2f; /* Deep red color for text */
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    border: 1px solid #d32f2f; /* Border color matching the text */
+    font-weight: 500; /* Slightly bold to emphasize the error */
+}
+
+/* Dashboard page specific styles */
+.dashboard-container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
