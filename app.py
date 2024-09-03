@@ -26,6 +26,9 @@ def login():
 
         if ssh_client:
             session['ssh_client'] = True  # Store login state
+            session['hostname'] = hostname
+            session['username'] = username
+            session['ssh_connection'] = ssh_client.get_transport().is_active()
             return redirect(url_for('dashboard'))
         else:
             return render_template('index.html', error=error)
@@ -36,14 +39,21 @@ def login():
 @app.route('/dashboard')
 def dashboard():
     if 'ssh_client' in session:
-        return render_template('dashboard.html')
+        hostname = session.get('hostname')
+        username = session.get('username')
+        connection_status = session.get('ssh_connection', False)
+        return render_template('dashboard.html', hostname=hostname, username=username,
+                               connection_status=connection_status)
     else:
         return redirect(url_for('login'))
 
 
-@app.route('/logout')
+@app.route('/logout', methods=['POST'])
 def logout():
+    # Close SSH connection if exists
     session.pop('ssh_client', None)
+    session.pop('hostname', None)
+    session.pop('username', None)
     return redirect(url_for('login'))
 
 
