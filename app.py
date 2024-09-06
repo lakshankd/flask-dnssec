@@ -87,8 +87,27 @@ def generate_keys():
 @app.route('/sign_zone')
 def sign_zone():
     # Logic for signing the zone
-    return render_template('sign_zone.html')
+    if 'ssh_client' in session:
+        hostname = session.get('hostname')
+        username = session.get('username')
+        connection_status = session.get('ssh_connection', False)
+        return render_template('sign_zone.html', hostname=hostname, username=username,
+                               connection_status=connection_status)
+    else:
+        return redirect(url_for('login'))
 
+
+@app.route('/apply_changes')
+def apply_changes():
+    # Logic for signing the zone
+    if 'ssh_client' in session:
+        hostname = session.get('hostname')
+        username = session.get('username')
+        connection_status = session.get('ssh_connection', False)
+        return render_template('apply_changes.html', hostname=hostname, username=username,
+                               connection_status=connection_status)
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/statistics')
 def statistics():

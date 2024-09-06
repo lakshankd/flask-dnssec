@@ -26,11 +26,15 @@
                 <p>Sign your DNS zone with the generated keys.</p>
             </div>
 
-            <div class="card" onclick="location.href='{{ url_for('statistics') }}'">
-                <i class="fas fa-chart-bar"></i>
-                <h3>Statistics</h3>
-                <p>View DNSSEC operation statistics.</p>
+            <div class="card" onclick="location.href='{{ url_for('apply_changes') }}'">
+                <i class="fas fa-check-circle"></i>
+                <h3>Apply Changes</h3>
+                <p>Commit the DNSSEC changes to the server.</p>
             </div>
+        </div>
+
+        <div class="statistics-button-container">
+            <button class="statistics-btn" onclick="location.href='{{ url_for('statistics') }}'">View Statistics</button>
         </div>
     </div>
 {% endblock %}
