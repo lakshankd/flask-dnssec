@@ -148,10 +148,6 @@ form button:hover {
     border-radius: 16px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     text-align: center;
-}
-
-.dashboard-container {
-    text-align: center;
     margin: 50px auto;
 }
 
@@ -208,5 +204,96 @@ form button:hover {
 }
 
 .statistics-btn:hover {
+    background-color: #005bb5;
+}
+
+/*Backup zone*/
+.backup-container {
+    background-color: white;
+    padding: 2rem;
+    text-align: center; /* Aligns the content to the left */
+    margin: 50px auto;
+    border-radius: 16px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.back-arrow {
+    text-align: left;
+    text-decoration: none;
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 24px;
+    display: block;
+}
+
+.backup-header {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+.back-form {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.backup-label {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.backup-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.backup-input:disabled {
+    /*background-color: #aaa;*/
+    cursor: not-allowed;
+}
+
+.backup-availability-btn {
+    padding: 12px;
+    margin-bottom: 10px;
+    background-color: #0070c9;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%; /* Full width button */
+    box-sizing: border-box;
+}
+
+.backup-availability-btn:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
+.backup-info-text {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 20px;
+    text-align: center; /* Center text for info */
+}
+
+.backup-next-step-btn {
+    margin-top: 30px;
+    background-color: #0070c9;
+    padding: 10px 20px; /* Adjusted padding to make the button shorter */
+    color: white;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    width: auto; /* Changed width to auto to make it shorter */
+    border: none; /* Removed dark border */
+}
+
+.backup-next-step-btn:hover {
     background-color: #005bb5;
 }
