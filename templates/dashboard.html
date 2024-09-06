@@ -5,6 +5,32 @@
 {% block content %}
     <div class="dashboard-container">
         <h2>Welcome to the DNSSEC Automation Dashboard</h2>
-        <p>Now you can manage DNSSEC configurations.</p>
+        <p>Select an action below to manage DNSSEC configurations.</p>
+
+        <div class="cards-container">
+            <div class="card" onclick="location.href='{{ url_for('backup_zone') }}'">
+                <i class="fas fa-file-alt"></i>
+                <h3>Backup DNS Zone</h3>
+                <p>Backup the DNS zone file securely.</p>
+            </div>
+
+            <div class="card" onclick="location.href='{{ url_for('generate_keys') }}'">
+                <i class="fas fa-key"></i>
+                <h3>Generate Key Pairs</h3>
+                <p>Create ZSK and KSK for DNSSEC.</p>
+            </div>
+
+            <div class="card" onclick="location.href='{{ url_for('sign_zone') }}'">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Sign DNS Zone</h3>
+                <p>Sign your DNS zone with the generated keys.</p>
+            </div>
+
+            <div class="card" onclick="location.href='{{ url_for('statistics') }}'">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Statistics</h3>
+                <p>View DNSSEC operation statistics.</p>
+            </div>
+        </div>
     </div>
 {% endblock %}

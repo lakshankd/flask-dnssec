@@ -57,5 +57,51 @@ def logout():
     return redirect(url_for('login'))
 
 
+#  code for the dashboard uris
+@app.route('/backup_zone')
+def backup_zone():
+    # Logic for backing up the zone file
+    if 'ssh_client' in session:
+        hostname = session.get('hostname')
+        username = session.get('username')
+        connection_status = session.get('ssh_connection', False)
+        return render_template('backup_zone.html', hostname=hostname, username=username,
+                               connection_status=connection_status)
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/generate_keys')
+def generate_keys():
+    # Logic for generating keys
+    if 'ssh_client' in session:
+        hostname = session.get('hostname')
+        username = session.get('username')
+        connection_status = session.get('ssh_connection', False)
+        return render_template('generate_keys.html', hostname=hostname, username=username,
+                               connection_status=connection_status)
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/sign_zone')
+def sign_zone():
+    # Logic for signing the zone
+    return render_template('sign_zone.html')
+
+
+@app.route('/statistics')
+def statistics():
+    # Logic for displaying statistics
+    if 'ssh_client' in session:
+        hostname = session.get('hostname')
+        username = session.get('username')
+        connection_status = session.get('ssh_connection', False)
+        return render_template('statistics.html', hostname=hostname, username=username,
+                               connection_status=connection_status)
+    else:
+        return redirect(url_for('login'))
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
