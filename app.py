@@ -5,11 +5,12 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Needed for session management
 
 
-def ssh_connect(hostname, username, password):
+def ssh_connect(hostname, username, password, port=22):
     try:
+        # function should be changed
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(hostname, username=username, password=password)
+        client.connect(hostname, username=username, password=password, port=port)
         return client, None
     except Exception as e:
         return None, str(e)
@@ -22,7 +23,14 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        ssh_client, error = ssh_connect(hostname, username, password)
+        # If the hostname is localhost (for Docker), use port 2222.
+        # Otherwise, default to port 22.
+        if hostname == 'localhost':
+            port = 2222
+        else:
+            port = 22
+
+        ssh_client, error = ssh_connect(hostname, username, password, port)
 
         if ssh_client:
             session['ssh_client'] = True  # Store login state
