@@ -257,6 +257,10 @@ form button:hover {
     cursor: not-allowed;
 }
 
+.backup-availability-info {
+
+}
+
 .backup-availability-btn {
     padding: 12px;
     margin-bottom: 10px;
