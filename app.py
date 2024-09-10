@@ -52,8 +52,12 @@ def login():
             return redirect(url_for('dashboard'))
         else:
             return render_template('index.html', error=error)
-
-    return render_template('index.html')
+    else:
+        if ssh_client:
+            ssh_client.close()
+            ssh_client = None
+        session.clear()
+        return render_template('index.html')
 
 
 @app.route('/dashboard')
@@ -81,7 +85,8 @@ def logout():
 
 @app.route('/backup_zone')
 def backup_zone():
-    if 'ssh_client' in session:
+    global ssh_client
+    if ssh_client:
         hostname = session.get('hostname')
         username = session.get('username')
         connection_status = session.get('ssh_connection', False)
@@ -91,6 +96,7 @@ def backup_zone():
         return redirect(url_for('login'))
 
 
+# To be developed
 @app.route('/check_zone_file_availability', methods=['POST'])
 def check_zone_file_availability():
     data = request.get_json()
@@ -126,9 +132,12 @@ def confirm_backup_zone_file():
         return jsonify({'error': 'SSH session not active.'})
 
 
+# end of to be developed
+
 @app.route('/generate_keys')
 def generate_keys():
-    if 'ssh_client' in session:
+    global ssh_client
+    if ssh_client:
         hostname = session.get('hostname')
         username = session.get('username')
         connection_status = session.get('ssh_connection', False)
@@ -140,7 +149,8 @@ def generate_keys():
 
 @app.route('/sign_zone')
 def sign_zone():
-    if 'ssh_client' in session:
+    global ssh_client
+    if ssh_client:
         hostname = session.get('hostname')
         username = session.get('username')
         connection_status = session.get('ssh_connection', False)
@@ -152,7 +162,8 @@ def sign_zone():
 
 @app.route('/apply_changes')
 def apply_changes():
-    if 'ssh_client' in session:
+    global ssh_client
+    if ssh_client:
         hostname = session.get('hostname')
         username = session.get('username')
         connection_status = session.get('ssh_connection', False)
@@ -164,7 +175,8 @@ def apply_changes():
 
 @app.route('/statistics')
 def statistics():
-    if 'ssh_client' in session:
+    global ssh_client
+    if ssh_client:
         hostname = session.get('hostname')
         username = session.get('username')
         connection_status = session.get('ssh_connection', False)
