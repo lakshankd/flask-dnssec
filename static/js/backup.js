@@ -1,4 +1,21 @@
 $(document).ready(function () {
+    $('#check-availability-btn').prop('disabled', true);
+
+    function checkInputs() {
+        const zonePath = $('#zone-path').val();
+        const fileName = $('#file-name').val();
+
+        if (zonePath !== '' && fileName !== '') {
+            $('#check-availability-btn').prop('disabled', false);
+        } else {
+            $('#check-availability-btn').prop('disabled', true);
+        }
+    }
+
+    $('#zone-path, #file-name').on('input', function () {
+        checkInputs();
+    });
+
     $('#check-availability-btn').on('click', function () {
         const zonePath = $('#zone-path').val();
         const fileName = $('#file-name').val();

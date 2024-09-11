@@ -99,12 +99,12 @@ def backup_zone():
 # To be developed
 @app.route('/check_zone_file_availability', methods=['POST'])
 def check_zone_file_availability():
+    global ssh_client
     data = request.get_json()
     zone_path = data['zone_path']
     file_name = data['file_name']
 
-    if 'ssh_client' in session:
-        ssh_client = session['ssh_client']
+    if ssh_client:
         stdin, stdout, stderr = ssh_client.exec_command(f'ls {zone_path}/{file_name}')
 
         if stdout.channel.recv_exit_status() == 0:
