@@ -239,7 +239,7 @@ form button:hover {
 }
 
 .backup-label {
-    font-size: 16px;
+    font-size: 14px;
     margin-bottom: 5px;
 }
 
@@ -282,7 +282,45 @@ form button:hover {
     font-size: 14px;
     color: #555;
     margin-bottom: 20px;
-    text-align: center; /* Center text for info */
+    text-align: left; /* Center text for info */
+}
+
+.success-backup-availability {
+    color: #28a745; /* Apple-like green color */
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* Error styling */
+.error-backup-availability {
+    color: #dc3545; /* Apple-like red color */
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* Icons styling for check and error icons */
+.success-backup-availability i, .error-backup-availability i {
+    margin-right: 8px;
+}
+
+.backup-info-text {
+    color: #5a5a5a; /* Neutral dark gray */
+    font-size: 14px;
+    padding: 10px;
+    background-color: #f5f5f5; /* Light gray background for emphasis */
+    border-left: 4px solid #007aff; /* Apple-like blue border */
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+    /*text-align: center;*/
+}
+
+/* Icon styling for the information message */
+.backup-info-text i {
+    margin-right: 16px;
+    color: #007aff; /* Apple-like blue icon */
+    font-size: 16px;
 }
 
 .backup-next-step-btn {

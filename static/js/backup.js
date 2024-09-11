@@ -20,6 +20,8 @@ $(document).ready(function () {
         const zonePath = $('#zone-path').val();
         const fileName = $('#file-name').val();
 
+        $('#backup-availability-info').removeClass('success-backup-availability error-backup-availability').text('');
+
         $.ajax({
             url: checkZoneFileAvailabilityUrl,
             method: 'POST',
@@ -27,26 +29,53 @@ $(document).ready(function () {
             data: JSON.stringify({zone_path: zonePath, file_name: fileName}),
             success: function (response) {
                 if (response.available) {
+                    $('#backup-availability-info')
+                        .addClass('success-backup-availability')
+                        .html(`<i class="fa fa-check-circle"></i> ${response.message}`);
                     $('#confirm-backup-btn').prop('disabled', false);
-                    $('#backup-availability-info').text('File is available. Ready for backup.');
                 } else {
-                    alert('File not available. Please check the path and try again.');
+                    $('#backup-availability-info')
+                        .addClass('error-backup-availability')
+                        .html(`<i class="fa fa-times-circle"></i> Error: ${response.error || 'File not available.'}`);
+                    $('#confirm-backup-btn').prop('disabled', true);
                 }
+            },
+            error: function () {
+                $('#backup-availability-info')
+                    .addClass('error-backup-availability')
+                    .html(`<i class="fa fa-times-circle"></i> An unexpected error occurred.`);
+                $('#confirm-backup-btn').prop('disabled', true);
             }
         });
     });
 
-    $('#confirm-backup-btn').on('click', function () {
+
+    $('#confirm-backup-btn').click(function () {
         const zonePath = $('#zone-path').val();
         const fileName = $('#file-name').val();
 
         $.ajax({
             url: confirmBackupZoneFileUrl,
-            method: 'POST',
+            type: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({zone_path: zonePath, file_name: fileName}),
+            data: JSON.stringify({
+                zone_path: zonePath,
+                file_name: fileName
+            }),
             success: function (response) {
-                alert('Backup successful: ' + response.backup_path);
+                if (response.success) {
+                    console.log(response)
+                    // $('#backup-availability-info').text(response.message).css('color', 'green');
+                    // // Optionally, show the backup file location
+                    // $('#backup-info').text(`Your file has been backed up to: ${response.backup_location}`).css('color', 'green');
+                } else {
+                    console.log(response)
+                    // $('#backup-availability-info').text(response.error).css('color', 'red');
+                }
+            },
+            error: function (xhr) {
+                const errorMessage = xhr.responseJSON ? xhr.responseJSON.error : 'An unknown error occurred.';
+                $('#backup-availability-info').text(errorMessage).css('color', 'red');
             }
         });
     });
