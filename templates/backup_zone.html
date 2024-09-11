@@ -12,7 +12,7 @@
         <form class="back-form" id="backup-availability-form">
             <label class="backup-label" for="zone-path">Path to Zone File</label>
             <input class="backup-input" type="text" id="zone-path" name="zone-path"
-                   placeholder="/etc/bind/zones/db.example.com" required >
+                   placeholder="/etc/bind/zones/db.example.com" required>
 
             <label class="backup-label" for="file-name">File Name</label>
             <input class="backup-input" type="text" id="file-name" name="file-name" placeholder="example.com" required>
@@ -34,44 +34,14 @@
             Next: Generate Keys &rarr;
         </button>
     </div>
-
+{% endblock content %}
+{% block scripts %}
     <!-- Include jQuery for simplicity -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/backup.js') }}"></script>
     <script>
-        $('#check-availability-btn').on('click', function() {
-            const zonePath = $('#zone-path').val();
-            const fileName = $('#file-name').val();
-
-            $.ajax({
-                url: "{{ url_for('check_zone_file_availability') }}",
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ zone_path: zonePath, file_name: fileName }),
-                success: function(response) {
-                    if (response.available) {
-                        $('#confirm-backup-btn').prop('disabled', false);  // Enable confirm button
-                        $('#backup-availability-info').text('File is available. Ready for backup.');
-                    } else {
-                        alert('File not available. Please check the path and try again.');
-                    }
-                }
-            });
-        });
-
-        // Confirm Backup
-        $('#confirm-backup-btn').on('click', function() {
-            const zonePath = $('#zone-path').val();
-            const fileName = $('#file-name').val();
-
-            $.ajax({
-                url: "{{ url_for('confirm_backup_zone_file') }}",
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ zone_path: zonePath, file_name: fileName }),
-                success: function(response) {
-                    alert('Backup successful: ' + response.backup_path);
-                }
-            });
-        });
+        // Pass Flask URL endpoints to the JavaScript file
+        const checkZoneFileAvailabilityUrl = "{{ url_for('check_zone_file_availability') }}";
+        const confirmBackupZoneFileUrl = "{{ url_for('confirm_backup_zone_file') }}";
     </script>
 {% endblock %}
