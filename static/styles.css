@@ -381,14 +381,14 @@ form button:hover {
 .backup-next-step-btn {
     margin-top: 20px;
     background-color: #0070c9;
-    padding: 10px 20px; /* Adjusted padding to make the button shorter */
+    padding: 10px 20px;
     color: white;
     border-radius: 5px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    width: auto; /* Changed width to auto to make it shorter */
-    border: none; /* Removed dark border */
+    width: auto;
+    border: none;
 }
 
 .backup-next-step-btn:hover {
