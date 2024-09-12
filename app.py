@@ -24,11 +24,16 @@ def execute_ssh_command(command):
     if ssh_client:
         try:
             stdin, stdout, stderr = ssh_client.exec_command(command)
-            return stdout.read().decode('utf-8'), None
+            stdout_data = stdout.read().decode('utf-8').strip()
+            stderr_data = stderr.read().decode('utf-8').strip()
+
+            if stderr_data:
+                return None, stderr_data
+            return stdout_data, None
         except Exception as e:
             return None, str(e)
     else:
-        return None, "SSH client not connected or Error occurred while executing commands"
+        return None, "SSH session not active."
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -96,43 +101,56 @@ def backup_zone():
         return redirect(url_for('login'))
 
 
-# To be developed
 @app.route('/check_zone_file_availability', methods=['POST'])
 def check_zone_file_availability():
     data = request.get_json()
     zone_path = data['zone_path']
     file_name = data['file_name']
 
-    if 'ssh_client' in session:
-        ssh_client = session['ssh_client']
-        stdin, stdout, stderr = ssh_client.exec_command(f'ls {zone_path}/{file_name}')
+    if not zone_path or not file_name:
+        return jsonify({'error': 'Zone path and file name are required.'}), 400
 
-        if stdout.channel.recv_exit_status() == 0:
-            return jsonify({'available': True})
-        else:
-            return jsonify({'available': False})
+    command = f'ls {zone_path}/{file_name}'
+
+    output, error = execute_ssh_command(command)
+
+    if error:
+        return jsonify({'available': False, 'error': error, 'zone_path': zone_path, 'file_name': file_name})
     else:
-        return jsonify({'error': 'SSH session not active.'})
+        return jsonify(
+            {'available': True, 'message': f'{output}: File is available.', 'zone_path': zone_path,
+             'file_name': file_name})
 
 
 @app.route('/confirm_backup_zone_file', methods=['POST'])
 def confirm_backup_zone_file():
     data = request.get_json()
-    zone_path = data['zone_path']
-    file_name = data['file_name']
+    zone_path = data.get('zone_path')
+    file_name = data.get('file_name')
+    backup_zone_path = '/etc/bind/backup'
 
-    if 'ssh_client' in session:
-        ssh_client = session['ssh_client']
-        backup_command = f'cp {zone_path}/{file_name} {zone_path}/{file_name}.backup'
-        ssh_client.exec_command(backup_command)
+    if not zone_path or not file_name:
+        return jsonify({'error': 'Zone path and file name are required.'}), 400
 
-        backup_path = f'{zone_path}/{file_name}.backup'
-        return jsonify({'backup_path': backup_path})
+    mkdir_command = f'mkdir -p {backup_zone_path}'
+    output, error = execute_ssh_command(mkdir_command)
+
+    if error:
+        return jsonify({'error': f"Error creating backup folder: {error}"}), 500
+
+    command = f'cp {zone_path}/{file_name} {backup_zone_path}/{file_name}.backup'
+    output, error = execute_ssh_command(command)
+
+    if error:
+        return jsonify({'error': f"Error occurred while backing up the file: {error}"}), 500
     else:
-        return jsonify({'error': 'SSH session not active.'})
+        backup_location = f"{backup_zone_path}/{file_name}.backup"
+        return jsonify({
+            'success': True,
+            'message': f"File successfully backed up to {backup_location}",
+            'backup_location': backup_location
+        }), 200
 
-
-# end of to be developed
 
 @app.route('/generate_keys')
 def generate_keys():
