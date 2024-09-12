@@ -58,24 +58,21 @@ $(document).ready(function () {
             url: confirmBackupZoneFileUrl,
             type: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({
-                zone_path: zonePath,
-                file_name: fileName
-            }),
+            data: JSON.stringify({zone_path: zonePath, file_name: fileName}),
             success: function (response) {
-                if (response.success) {
-                    console.log(response)
-                    // $('#backup-availability-info').text(response.message).css('color', 'green');
-                    // // Optionally, show the backup file location
-                    // $('#backup-info').text(`Your file has been backed up to: ${response.backup_location}`).css('color', 'green');
-                } else {
-                    console.log(response)
-                    // $('#backup-availability-info').text(response.error).css('color', 'red');
-                }
+                $('#backup-message')
+                    .addClass('success-backup-message')
+                    .html(
+                        `<i class="fa fa-check-circle"></i> ${response.message}`
+                    )
             },
             error: function (xhr) {
-                const errorMessage = xhr.responseJSON ? xhr.responseJSON.error : 'An unknown error occurred.';
-                $('#backup-availability-info').text(errorMessage).css('color', 'red');
+                const errorResponse = xhr.responseJSON ? xhr.responseJSON.error : 'An error occurred';
+                $('#backup-message')
+                    .addClass('error-backup-message')
+                    .html(
+                        `<i class="fa fa-exclamation-circle"></i> ${errorResponse}`
+                    )
             }
         });
     });

@@ -126,41 +126,33 @@ def check_zone_file_availability():
 @app.route('/confirm_backup_zone_file', methods=['POST'])
 def confirm_backup_zone_file():
     data = request.get_json()
-    zone_path = data['zone_path']
-    file_name = data['file_name']
+    zone_path = data.get('zone_path')
+    file_name = data.get('file_name')
     backup_zone_path = '/etc/bind/backup'
 
     if not zone_path or not file_name:
         return jsonify({'error': 'Zone path and file name are required.'}), 400
 
-    check_backup_dir_command = f'mkdir -p {backup_zone_path}'
-    output, error = execute_ssh_command(check_backup_dir_command)
-
-    backup_file_command = f'cp {zone_path}/{file_name} {backup_zone_path}/{file_name}.backup'
-    output, error = execute_ssh_command(backup_file_command)
+    # Check if backup folder exists and create it if not
+    mkdir_command = f'mkdir -p {backup_zone_path}'
+    output, error = execute_ssh_command(mkdir_command)
 
     if error:
-        return jsonify({
-            'success': False,
-            'error': f"Error occurred while creating the backup folder: {error}",
-            'zone_path': zone_path,
-            'file_name': file_name
-        }),
+        return jsonify({'error': f"Error creating backup folder: {error}"}), 500
+
+    # Command to copy the file
+    command = f'cp {zone_path}/{file_name} {backup_zone_path}/{file_name}.backup'
+    output, error = execute_ssh_command(command)
+
+    if error:
+        return jsonify({'error': f"Error occurred while backing up the file: {error}"}), 500
     else:
-        if error:
-            return jsonify({
-                'success': False,
-                'error': f"Error occurred while backing up the file: {error}",
-                'zone_path': zone_path,
-                'file_name': file_name
-            }),
-        else:
-            backup_file_location = f"{backup_zone_path}/{file_name}.backup"
-            return jsonify({
-                'success': True,
-                'message': f"File has been successfully backed up to {backup_file_location}",
-                'backup_location': backup_file_location
-            })
+        backup_location = f"{backup_zone_path}/{file_name}.backup"
+        return jsonify({
+            'success': True,
+            'message': f"File successfully backed up to {backup_location}",
+            'backup_location': backup_location
+        }), 200
 
 
 # end of to be developed
