@@ -101,7 +101,6 @@ def backup_zone():
         return redirect(url_for('login'))
 
 
-# To be developed
 @app.route('/check_zone_file_availability', methods=['POST'])
 def check_zone_file_availability():
     data = request.get_json()
@@ -133,14 +132,12 @@ def confirm_backup_zone_file():
     if not zone_path or not file_name:
         return jsonify({'error': 'Zone path and file name are required.'}), 400
 
-    # Check if backup folder exists and create it if not
     mkdir_command = f'mkdir -p {backup_zone_path}'
     output, error = execute_ssh_command(mkdir_command)
 
     if error:
         return jsonify({'error': f"Error creating backup folder: {error}"}), 500
 
-    # Command to copy the file
     command = f'cp {zone_path}/{file_name} {backup_zone_path}/{file_name}.backup'
     output, error = execute_ssh_command(command)
 
@@ -154,8 +151,6 @@ def confirm_backup_zone_file():
             'backup_location': backup_location
         }), 200
 
-
-# end of to be developed
 
 @app.route('/generate_keys')
 def generate_keys():
