@@ -3,7 +3,20 @@
 {% block title %}Generate Key Pairs - DNSSEC Guardian{% endblock %}
 
 {% block content %}
-    <div class="generate-key-container">
-        <h1>Generate Key Pairs</h1>
+    <div class="generate-keys-container">
+        <a href="{{ url_for('dashboard') }}" class="back-arrow">
+            &#8592; Dashboard
+        </a>
+        <h2 class="generate-keys-header">Generate Key Pairs</h2>
+        {# content #}
+        <button class="next-step-btn">
+            Next: Sign DNS Zone &rarr;
+        </button>
     </div>
+
+    <!-- scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/generate_keys.js') }}"></script>
+    <script>
+    </script>
 {% endblock %}

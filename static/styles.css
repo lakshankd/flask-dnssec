@@ -195,7 +195,7 @@ form button:hover {
 
 .card i {
     font-size: 50px;
-    color: #0070c9; /* Apple-like blue */
+    color: #0070c9;
 }
 
 .card h3 {
@@ -301,13 +301,6 @@ form button:hover {
     cursor: not-allowed;
 }
 
-/*.backup-info-text {*/
-/*    font-size: 14px;*/
-/*    color: #555;*/
-/*    margin-bottom: 20px;*/
-/*    text-align: left;*/
-/*}*/
-
 .success-backup-availability {
     color: #5a5a5a;
     font-size: 14px;
@@ -402,7 +395,7 @@ form button:hover {
     color: #dc3545;
 }
 
-.backup-next-step-btn {
+.next-step-btn {
     margin-top: 20px;
     background-color: #0070c9;
     padding: 10px 20px;
@@ -415,8 +408,30 @@ form button:hover {
     border: none;
 }
 
-.backup-next-step-btn:hover {
+.next-step-btn:hover {
     background-color: #005bb5;
 }
 
 /*  End of Backup Zone CSS  */
+
+/* Generate Keys CSS*/
+.generate-keys-container {
+    background-color: white;
+    padding: 2rem;
+    text-align: center;
+    margin: 50px auto;
+    border-radius: 16px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.generate-keys-header {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+.generate-keys-next-step-btn {
+
+}
+
+/* End of Generate Keys CSS*/
