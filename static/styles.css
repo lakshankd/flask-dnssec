@@ -430,8 +430,40 @@ form button:hover {
     margin-bottom: 30px;
 }
 
-.generate-keys-next-step-btn {
+/* End of Generate Keys CSS*/
 
+/* Sign Zone */
+.sign-zone-container {
+    background-color: white;
+    padding: 2rem;
+    text-align: center;
+    margin: 50px auto;
+    border-radius: 16px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* End of Generate Keys CSS*/
+.sign-zone-header {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+/* End Sign Zone */
+
+/* Apply Changes */
+.apply-changes-container {
+    background-color: white;
+    padding: 2rem;
+    text-align: center;
+    margin: 50px auto;
+    border-radius: 16px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.apply-changes-header {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+/* End of Apply Changes */
