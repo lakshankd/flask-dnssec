@@ -4,6 +4,19 @@
 
 {% block content %}
     <div class="sign-zone-container">
-        <h1>Sign DNS Zone</h1>
+        <a href="{{ url_for('dashboard') }}" class="back-arrow">
+            &#8592; Dashboard
+        </a>
+        <h1 class="sign-zone-header">Sign DNS Zone</h1>
+        {# content #}
+        <button class="next-step-btn">
+            Next: Apply Changes &rarr;
+        </button>
     </div>
+
+    <!-- scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/sign_zone.js') }}"></script>
+    <script>
+    </script>
 {% endblock %}
