@@ -4,6 +4,18 @@
 
 {% block content %}
     <div class="statistics-container">
-        <h1>Statistics</h1>
+        <a href="{{ url_for('dashboard') }}" class="back-arrow">
+            &#8592; Dashboard
+        </a>
+        <h1 class="statistics-header">Statistics</h1>
+        <button class="next-step-btn">
+            Next: View Statistics &rarr;
+        </button>
     </div>
+
+    <!-- scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/statistics.js') }}"></script>
+    <script>
+    </script>
 {% endblock %}

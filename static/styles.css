@@ -467,3 +467,21 @@ form button:hover {
 }
 
 /* End of Apply Changes */
+
+/* View Statistics */
+.statistics-container {
+    background-color: white;
+    padding: 2rem;
+    text-align: center;
+    margin: 50px auto;
+    border-radius: 16px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.statistics-header {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+/* View Statistics */
