@@ -430,6 +430,55 @@ form button:hover {
     margin-bottom: 30px;
 }
 
+.generate-keys-form {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.generate-keys-sub-header {
+    text-align: left;
+    font-size: 16px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.generate-keys-label {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.generate-keys-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.generate-keys-input:disabled {
+    cursor: not-allowed;
+}
+
+.generate-keys-btn {
+    padding: 12px;
+    margin-bottom: 10px;
+    background-color: #0070c9;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.generate-keys-btn:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
 /* End of Generate Keys CSS*/
 
 /* Sign Zone */

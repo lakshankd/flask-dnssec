@@ -8,7 +8,53 @@
             &#8592; Dashboard
         </a>
         <h2 class="generate-keys-header">Generate Key Pairs</h2>
-        {# content #}
+        <form class="generate-keys-form" id="generate-keys-form">
+            <h2 class="generate-keys-sub-header">ZSK Configuration</h2>
+            <label class="generate-keys-label" for="zsk-algorithm">Algorithm</label>
+            <select class="generate-keys-input" id="zsk-algorithm" name="zsk-algorithm" required>
+                <option value="RSASHA256" data-key-sizes="[1024, 2048, 3072, 4096]">RSASHA256</option>
+                <option value="ED25519" data-key-sizes="[256]">ED25519</option>
+            </select>
+            <label class="generate-keys-label" for="zsk-key-size">ZSK Key Size</label>
+            <select class="generate-keys-input" id="zsk-key-size" name="zsk-key-size">
+                <!-- Key sizes will be dynamically populated -->
+            </select>
+
+            <label class="generate-keys-label" for="zsk-domain-name">Domain Name</label>
+            <input class="generate-keys-input" type="text" id="zsk-domain-name" name="domain-name"
+                   placeholder="Enter your domain name" required>
+
+            <button class="generate-keys-btn" type="button" id="generate-zsk-btn">
+                Generate ZSK Keys
+            </button>
+
+            <p id="zsk-key-info" class="zsk-key-info" hidden="hidden"></p>
+        </form>
+
+        <form class="generate-keys-form" id="generate-keys-form">
+            <h2 class="generate-keys-sub-header">KSK Configuration</h2>
+            <label class="generate-keys-label" for="ksk-algorithm">Algorithm</label>
+            <select class="generate-keys-input" id="ksk-algorithm" name="ksk-algorithm">
+                <option value="RSASHA256" data-key-sizes="[1024, 2048, 3072, 4096]">RSASHA256</option>
+                <option value="ED25519" data-key-sizes="[256]">ED25519</option>
+            </select>
+            <label class="generate-keys-label" for="ksk-key-size">KSK Key Size</label>
+            <select class="generate-keys-input" id="ksk-key-size" name="ksk-key-size" required>
+                <!-- Key sizes will be dynamically populated -->
+            </select>
+
+            <label class="generate-keys-label" for="ksk-domain-name">Domain Name</label>
+            <input class="generate-keys-input" type="text" id="ksk-domain-name" name="domain-name"
+                   placeholder="Enter your domain name" required>
+
+
+            <button class="generate-keys-btn" type="button" id="generate-ksk-btn">
+                Generate KSK Keys
+            </button>
+
+            <p id="ksk-key-info" class="ksk-key-info" hidden="hidden"></p>
+        </form>
+
         <button class="next-step-btn">
             Next: Sign DNS Zone &rarr;
         </button>
@@ -18,5 +64,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ url_for('static', filename='js/generate_keys.js') }}"></script>
     <script>
-    </script>
+        const generateZskUrl = "{{ url_for('generate_zsk_key') }}"
+        const generateKskUrl = "{{ url_for('generate_ksk_key') }}"
+    </script>s
 {% endblock %}
