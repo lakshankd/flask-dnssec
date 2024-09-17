@@ -30,7 +30,11 @@ $(document).ready(function () {
         updateKeySizes('#ksk-algorithm', '#ksk-key-size');
     });
 
-    // Initially populate the key sizes for both ZSK and KSK
     updateKeySizes('#zsk-algorithm', '#zsk-key-size');
     updateKeySizes('#ksk-algorithm', '#ksk-key-size');
+
+    // Button disable functionality
+    $('#generate-zsk-btn').prop('disabled', true);
+    $('#generate-ksk-btn').prop('disabled', true);
+
 })
