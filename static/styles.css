@@ -462,6 +462,23 @@ form button:hover {
     cursor: not-allowed;
 }
 
+.generate-keys-btn {
+    padding: 12px;
+    margin-bottom: 10px;
+    background-color: #0070c9;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.generate-keys-btn:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
 /* End of Generate Keys CSS*/
 
 /* Sign Zone */

@@ -165,6 +165,60 @@ def generate_keys():
         return redirect(url_for('login'))
 
 
+@app.route('/generate_zsk_key', methods=['POST'])
+def generate_zsk_key():
+    data = request.get_json()
+    algorithm = data.get('algorithm')
+    key_size = data.get('key_size')
+    domain_name = data.get('domain_name')
+
+    if not algorithm or not key_size or not domain_name:
+        return jsonify({'error': 'Algorithm, key size, and domain name are required.'}), 400
+
+    mkdir_command = 'mkdir -p /etc/bind/keys'
+    output, error = execute_ssh_command(mkdir_command)
+    if error:
+        return jsonify({'error': f"Error creating directory: {error}"}), 500
+
+    zsk_command = f'cd /etc/bind/keys && dnssec-keygen -a {algorithm} -b {key_size} -n ZONE {domain_name}'
+    zsk_output, zsk_error = execute_ssh_command(zsk_command)
+    if zsk_error:
+        return jsonify({'error': f"Error occurred while generating the ZSK key: {zsk_error}"}), 500
+
+    return jsonify({
+        'success': True,
+        'message': 'ZSK key successfully generated',
+        'output': zsk_output
+    }), 200
+
+
+@app.route('/generate_ksk_key', methods=['POST'])
+def generate_ksk_key():
+    data = request.get_json()
+    algorithm = data.get('algorithm')
+    key_size = data.get('key_size')
+    domain_name = data.get('domain_name')
+
+    if not algorithm or not key_size or not domain_name:
+        return jsonify({'error': 'Algorithm, key size, and domain name are required.'}), 400
+
+    mkdir_command = 'mkdir -p /etc/bind/keys'
+    output, error = execute_ssh_command(mkdir_command)
+    if error:
+        return jsonify({'error': f"Error creating directory: {error}"}), 500
+
+    ksk_command = f'cd /etc/bind/keys && dnssec-keygen -f KSK -a {algorithm} -b {key_size} -n ZONE {domain_name}'
+    ksk_output, ksk_error = execute_ssh_command(ksk_command)
+    if ksk_error:
+        return jsonify({'error': f"Error occurred while generating the KSK key: {ksk_error}"}), 500
+
+    return jsonify({
+        'success': True,
+        'message': 'KSK key successfully generated',
+        'output': ksk_output
+    }), 200
+
+
 @app.route('/sign_zone')
 def sign_zone():
     global ssh_client

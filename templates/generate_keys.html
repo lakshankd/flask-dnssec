@@ -20,7 +20,7 @@
                 <!-- Key sizes will be dynamically populated -->
             </select>
 
-            <label class="generate-keys-label" for="domain-name">Domain Name</label>
+            <label class="generate-keys-label" for="zsk-domain-name">Domain Name</label>
             <input class="generate-keys-input" type="text" id="zsk-domain-name" name="domain-name"
                    placeholder="Enter your domain name" required>
 
@@ -43,7 +43,7 @@
                 <!-- Key sizes will be dynamically populated -->
             </select>
 
-            <label class="generate-keys-label" for="domain-name">Domain Name</label>
+            <label class="generate-keys-label" for="ksk-domain-name">Domain Name</label>
             <input class="generate-keys-input" type="text" id="ksk-domain-name" name="domain-name"
                    placeholder="Enter your domain name" required>
 
@@ -64,5 +64,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ url_for('static', filename='js/generate_keys.js') }}"></script>
     <script>
-    </script>
+        const generateZskUrl = "{{ url_for('generate_zsk_key') }}"
+        const generateKskUrl = "{{ url_for('generate_ksk_key') }}"
+    </script>s
 {% endblock %}
