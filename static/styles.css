@@ -497,6 +497,47 @@ form button:hover {
     margin-bottom: 30px;
 }
 
+.sign-zone-form {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.sign-zone-label {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.sign-zone-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.sign-zone-input:disabled {
+    cursor: not-allowed;
+}
+
+.sign-zone-btn {
+    padding: 12px;
+    margin-bottom: 10px;
+    background-color: #0070c9;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.sign-zone-btn:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
 /* End Sign Zone */
 
 /* Apply Changes */

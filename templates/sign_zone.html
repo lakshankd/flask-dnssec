@@ -8,7 +8,23 @@
             &#8592; Dashboard
         </a>
         <h1 class="sign-zone-header">Sign DNS Zone</h1>
-        {# content #}
+        <form class="sign-zone-form" id="sign-zone-form">
+            <label class="sign-zone-label" for="sign-zone-origin">Origin</label>
+            <input class="sign-zone-input" type="text" id="sign-zone-origin" name="sign-zone-origin"
+                   placeholder="Enter your domain name" required>
+            <label class="sign-zone-label" for="sign-zone-keys-directory">Keys Directory</label>
+            <input class="sign-zone-input" type="text" id="sign-zone-keys-directory" name="sign-zone-keys-directory"
+                   placeholder="/etc/bind/keys" required>
+            <label class="sign-zone-label" for="sign-zone-file-path">Zone File</label>
+            <input class="sign-zone-input" type="text" id="sign-zone-file-path" name="sign-zone-file-path"
+                   placeholder="/etc/bind/zones/[filename]" required>
+
+            <button class="sign-zone-btn" type="button" id="sign-zone-btn">
+                Sign
+            </button>
+
+            <p id="sign-zone-info" class="sign-zone-info" hidden="hidden"></p>
+        </form>
         <button class="next-step-btn">
             Next: Apply Changes &rarr;
         </button>
