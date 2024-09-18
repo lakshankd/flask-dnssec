@@ -31,19 +31,22 @@ $(document).ready(function () {
                 if (response.available) {
                     $('#backup-availability-info')
                         .addClass('success-backup-availability')
-                        .html(`<i class="fa fa-check-circle"></i> ${response.message}`);
+                        .html(`<i class="fa fa-check-circle"></i> ${response.message}`)
+                        .show();
                     $('#confirm-backup-btn').prop('disabled', false);
                 } else {
                     $('#backup-availability-info')
                         .addClass('error-backup-availability')
-                        .html(`<i class="fa fa-times-circle"></i> Error: ${response.error || 'File not available.'}`);
+                        .html(`<i class="fa fa-times-circle"></i> Error: ${response.error || 'File not available.'}`)
+                        .show();
                     $('#confirm-backup-btn').prop('disabled', true);
                 }
             },
             error: function () {
                 $('#backup-availability-info')
                     .addClass('error-backup-availability')
-                    .html(`<i class="fa fa-times-circle"></i> An unexpected error occurred.`);
+                    .html(`<i class="fa fa-times-circle"></i> An unexpected error occurred.`)
+                    .show();
                 $('#confirm-backup-btn').prop('disabled', true);
             }
         });
@@ -65,6 +68,7 @@ $(document).ready(function () {
                     .html(
                         `<i class="fa fa-check-circle"></i> ${response.message}`
                     )
+                    .show();
             },
             error: function (xhr) {
                 const errorResponse = xhr.responseJSON ? xhr.responseJSON.error : 'An error occurred';
@@ -73,6 +77,7 @@ $(document).ready(function () {
                     .html(
                         `<i class="fa fa-exclamation-circle"></i> ${errorResponse}`
                     )
+                    .show();
             }
         });
     });

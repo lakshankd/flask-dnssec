@@ -232,6 +232,39 @@ def sign_zone():
         return redirect(url_for('login'))
 
 
+@app.route('/sign_zone_request', methods=['POST'])
+def sign_zone_request():
+    data = request.get_json()
+    origin = data.get('origin')
+    keys_directory = data.get('keys_directory')
+    zone_file_path = data.get('zone_file_path')
+
+    if not origin or not keys_directory or not zone_file_path:
+        return jsonify({'error': 'Origin, keys directory, and zone file path are required.'}), 400
+
+    check_zone_file_command = f'test -f {zone_file_path}'
+    _, error = execute_ssh_command(check_zone_file_command)
+    if error:
+        return jsonify({'error': f'Zone file not found at {zone_file_path}.'}), 404
+
+    check_keys_dir_command = f'test -d {keys_directory}'
+    _, error = execute_ssh_command(check_keys_dir_command)
+    if error:
+        return jsonify({'error': f'Keys directory not found at {keys_directory}.'}), 404
+
+    sign_command = f'cd /etc/bind/zones && dnssec-signzone -S -K {keys_directory} -o {origin} {zone_file_path}'
+    output, sign_error = execute_ssh_command(sign_command)
+
+    if sign_error:
+        return jsonify({'error': f"Error occurred while signing the zone: {sign_error}"}), 500
+
+    return jsonify({
+        'success': True,
+        'message': 'Zone successfully signed',
+        'output': output
+    }), 200
+
+
 @app.route('/apply_changes')
 def apply_changes():
     global ssh_client

@@ -34,5 +34,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ url_for('static', filename='js/sign_zone.js') }}"></script>
     <script>
+        const signZoneFile = "{{ url_for('sign_zone_request') }}";
     </script>
 {% endblock %}

@@ -70,7 +70,6 @@ $(document).ready(function () {
             contentType: 'application/json',
             data: JSON.stringify({algorithm: algorithm, key_size: keySize, domain_name: domainName}),
             success: function (response) {
-                console.log(response)
                 $('#zsk-key-info')
                     .addClass('success-backup-message')
                     .html(`<i class="fa fa-check-circle"></i> ${response.message + ". Output: " + response.output}`)
