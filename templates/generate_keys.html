@@ -55,7 +55,7 @@
             <p id="ksk-key-info" class="ksk-key-info" hidden="hidden"></p>
         </form>
 
-        <button class="next-step-btn">
+        <button class="next-step-btn" id="next-sign-zone-btn">
             Next: Sign DNS Zone &rarr;
         </button>
     </div>
@@ -66,5 +66,6 @@
     <script>
         const generateZskUrl = "{{ url_for('generate_zsk_key') }}"
         const generateKskUrl = "{{ url_for('generate_ksk_key') }}"
-    </script>s
+        const signZoneUrl = "{{ url_for('sign_zone') }}"
+    </script>
 {% endblock %}

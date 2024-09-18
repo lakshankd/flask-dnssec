@@ -25,7 +25,7 @@
 
             <p id="sign-zone-info" class="sign-zone-info" hidden="hidden"></p>
         </form>
-        <button class="next-step-btn">
+        <button class="next-step-btn" id="next-apply-changes-btn">
             Next: Apply Changes &rarr;
         </button>
     </div>
@@ -35,5 +35,6 @@
     <script src="{{ url_for('static', filename='js/sign_zone.js') }}"></script>
     <script>
         const signZoneFile = "{{ url_for('sign_zone_request') }}";
+        const applyChangesUrl = "{{ url_for('apply_changes') }}"
     </script>
 {% endblock %}

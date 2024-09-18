@@ -8,7 +8,7 @@
             &#8592; Dashboard
         </a>
         <h1 class="apply-changes-header">Apply Changes</h1>
-        <button class="next-step-btn">
+        <button class="next-step-btn" id="next-view-statistics-btn">
             Next: View Statistics &rarr;
         </button>
     </div>
@@ -17,5 +17,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ url_for('static', filename='js/apply_changes.js') }}"></script>
     <script>
+        const viewStatisticsUrl = "{{ url_for('statistics') }}"
     </script>
 {% endblock %}
