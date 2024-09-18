@@ -81,4 +81,8 @@ $(document).ready(function () {
             }
         });
     });
+
+    $('#next-generate-keys-btn').click(function () {
+        window.location.href = generateKeysUrl;
+    });
 });

@@ -37,7 +37,7 @@
 
         <p id="backup-message" class="backup-message" hidden="hidden"></p>
 
-        <button class="next-step-btn">
+        <button class="next-step-btn" id="next-generate-keys-btn">
             Next: Generate Keys &rarr;
         </button>
     </div>
@@ -48,5 +48,6 @@
     <script>
         const checkZoneFileAvailabilityUrl = "{{ url_for('check_zone_file_availability') }}";
         const confirmBackupZoneFileUrl = "{{ url_for('confirm_backup_zone_file') }}";
+        const generateKeysUrl = "{{ url_for('generate_keys') }}"
     </script>
 {% endblock %}

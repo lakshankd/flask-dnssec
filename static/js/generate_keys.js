@@ -114,4 +114,8 @@ $(document).ready(function () {
         });
     });
 
+    $('#next-sign-zone-btn').click(function () {
+        window.location.href = signZoneUrl;
+    });
+
 })
