@@ -252,6 +252,16 @@ def sign_zone_request():
     if error:
         return jsonify({'error': f'Keys directory not found at {keys_directory}.'}), 404
 
+    chown_keys_command = f'chown -R bind:bind {keys_directory}'
+    _, chown_keys_error = execute_ssh_command(chown_keys_command)
+    if chown_keys_error:
+        return jsonify({'error': f"Error changing ownership of keys directory: {chown_keys_error}"}), 500
+
+    chown_zones_command = f'chown -R bind:bind /etc/bind/zones'
+    _, chown_zones_error = execute_ssh_command(chown_zones_command)
+    if chown_zones_error:
+        return jsonify({'error': f"Error changing ownership of zones directory: {chown_zones_error}"}), 500
+
     sign_command = f'cd /etc/bind/zones && dnssec-signzone -S -K {keys_directory} -o {origin} {zone_file_path}'
     output, sign_error = execute_ssh_command(sign_command)
 
