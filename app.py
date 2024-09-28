@@ -288,6 +288,86 @@ def apply_changes():
         return redirect(url_for('login'))
 
 
+@app.route('/apply_changes_request', methods=['POST'])
+def apply_changes_request():
+    data = request.get_json()
+    zone_name = data.get('zone_name')
+
+    # Ensure the zone name is provided
+    if not zone_name:
+        return jsonify({'error': 'Zone name is required.'}), 400
+
+    named_conf_local_path = '/etc/bind/named.conf.local'
+
+    # Read the named.conf.local file
+    read_command = f'cat {named_conf_local_path}'
+    named_conf_content, read_error = execute_ssh_command(read_command)
+
+    if read_error:
+        return jsonify({'error': f"Error reading named.conf.local file: {read_error}"}), 500
+
+    # Check if the zone exists in the file
+    zone_start = f'zone "{zone_name}"'
+    if zone_start not in named_conf_content:
+        return jsonify({'error': f"Zone '{zone_name}' not found in named.conf.local"}), 404
+
+    # Locate the block that needs to be modified for the zone
+    zone_block_start = named_conf_content.find(zone_start)
+    zone_block_end = named_conf_content.find('};', zone_block_start) + 2  # Including closing brace
+
+    # Extract the current zone block
+    current_zone_block = named_conf_content[zone_block_start:zone_block_end]
+
+    # Modify or add the necessary lines in the zone block
+
+    # Ensure the `file` line is updated to use the signed file
+    if f'file "/etc/bind/zones/db.{zone_name}"' in current_zone_block:
+        modified_zone_block = current_zone_block.replace(
+            f'file "/etc/bind/zones/db.{zone_name}"',
+            f'file "/etc/bind/zones/db.{zone_name}.signed"'
+        )
+    else:
+        # If the `file` directive is missing, append it
+        modified_zone_block = current_zone_block.rstrip(
+            '};') + f'\n    file "/etc/bind/zones/db.{zone_name}.signed";\n}};'
+
+    # Add `key-directory` if it doesn't exist
+    if 'key-directory' not in modified_zone_block:
+        modified_zone_block = modified_zone_block.rstrip('};') + '\n    key-directory "/etc/bind/keys";\n};'
+
+    # Add or ensure `auto-dnssec maintain` exists
+    if 'auto-dnssec' not in modified_zone_block:
+        modified_zone_block = modified_zone_block.rstrip('};') + '\n    auto-dnssec maintain;\n};'
+
+    # Add or ensure `inline-signing yes` exists
+    if 'inline-signing' not in modified_zone_block:
+        modified_zone_block = modified_zone_block.rstrip('};') + '\n    inline-signing yes;\n};'
+
+    # Replace the original zone block with the modified one in the full content
+    modified_named_conf_content = (named_conf_content[:zone_block_start] +
+                                   modified_zone_block +
+                                   named_conf_content[zone_block_end:])
+
+    # Write the modified content back to the named.conf.local file
+    write_command = f'echo "{modified_named_conf_content}" > {named_conf_local_path}'
+    _, write_error = execute_ssh_command(write_command)
+
+    if write_error:
+        return jsonify({'error': f"Error writing changes to named.conf.local file: {write_error}"}), 500
+
+    # Reload BIND configuration to apply changes
+    reload_command = 'rndc reload'
+    _, reload_error = execute_ssh_command(reload_command)
+
+    if reload_error:
+        return jsonify({'error': f"Error reloading BIND configuration: {reload_error}"}), 500
+
+    return jsonify({
+        'success': True,
+        'message': f"Zone '{zone_name}' successfully updated and BIND reloaded."
+    }), 200
+
+
 @app.route('/statistics')
 def statistics():
     global ssh_client
