@@ -17,9 +17,7 @@
                 Apply Changes
             </button>
         </form>
-        <div class="apply-changes-output">
-            This is the output after applying changes
-        </div>
+        <p id="apply-changes-info" class="apply-changes-info" hidden="hidden"></p>
         <button class="next-step-btn" id="next-view-statistics-btn">
             Next: View Statistics &rarr;
         </button>
@@ -29,6 +27,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ url_for('static', filename='js/apply_changes.js') }}"></script>
     <script>
+        const applyChangesRequestUrl = "{{ url_for('apply_changes_request') }}";
         const viewStatisticsUrl = "{{ url_for('statistics') }}"
     </script>
 {% endblock %}
