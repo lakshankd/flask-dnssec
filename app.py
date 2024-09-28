@@ -293,15 +293,15 @@ def apply_changes_request():
     data = request.get_json()
     zone_name = data.get('zone_name')
 
-    # Ensure the zone name is provided
     if not zone_name:
         return jsonify({'error': 'Zone name is required.'}), 400
 
     named_conf_local_path = '/etc/bind/named.conf.local'
 
-    # Read the named.conf.local file
     read_command = f'cat {named_conf_local_path}'
     named_conf_content, read_error = execute_ssh_command(read_command)
+
+    print("named.conf.local file content:", named_conf_content)
 
     if read_error:
         return jsonify({'error': f"Error reading named.conf.local file: {read_error}"}), 500
@@ -313,40 +313,78 @@ def apply_changes_request():
 
     # Locate the block that needs to be modified for the zone
     zone_block_start = named_conf_content.find(zone_start)
-    zone_block_end = named_conf_content.find('};', zone_block_start) + 2  # Including closing brace
 
-    # Extract the current zone block
+    if zone_block_start == -1:
+        return jsonify({'error': f"Zone '{zone_name}' not found in named.conf.local"}), 404
+
+    # Manually parse the block by counting braces
+    brace_count = 0
+    zone_block_end = zone_block_start
+    inside_zone_block = False
+
+    for i in range(zone_block_start, len(named_conf_content)):
+        char = named_conf_content[i]
+
+        if char == '{':
+            brace_count += 1
+            inside_zone_block = True
+        elif char == '}':
+            brace_count -= 1
+
+        if inside_zone_block and brace_count == 0:
+            zone_block_end = i + 1  # Include the closing brace
+            break
+
+        # Extract the current zone block
     current_zone_block = named_conf_content[zone_block_start:zone_block_end]
 
-    # Modify or add the necessary lines in the zone block
+    # DEBUG: Show the extracted block
+    print("current_zone_block:", current_zone_block)
 
-    # Ensure the `file` line is updated to use the signed file
-    if f'file "/etc/bind/zones/db.{zone_name}"' in current_zone_block:
+    # Modify or add the necessary lines in the zone block
+    file_pattern = f'file "/etc/bind/zones/{zone_name}"'
+
+    # Replace the `file` line with the signed file
+    if file_pattern in current_zone_block:
+        # Correct the replacement to change the exact file directive
         modified_zone_block = current_zone_block.replace(
-            f'file "/etc/bind/zones/db.{zone_name}"',
-            f'file "/etc/bind/zones/db.{zone_name}.signed"'
+            file_pattern,
+            f'file "/etc/bind/zones/{zone_name}.signed"'
         )
     else:
-        # If the `file` directive is missing, append it
-        modified_zone_block = current_zone_block.rstrip(
-            '};') + f'\n    file "/etc/bind/zones/db.{zone_name}.signed";\n}};'
+        # Append the signed file directive if not present (though unlikely in this case)
+        if f'file "/etc/bind/zones/{zone_name}.signed"' not in current_zone_block:
+            modified_zone_block = current_zone_block.rstrip(
+                '};') + f'\n    file "/etc/bind/zones/db.{zone_name}.signed";\n}};'
+        else:
+            modified_zone_block = current_zone_block
+
+    print("after adding file ->  modified_zone_block:", modified_zone_block)
 
     # Add `key-directory` if it doesn't exist
     if 'key-directory' not in modified_zone_block:
         modified_zone_block = modified_zone_block.rstrip('};') + '\n    key-directory "/etc/bind/keys";\n};'
 
+    print("after adding key-directory -> modified_zone_block:", modified_zone_block)
+
     # Add or ensure `auto-dnssec maintain` exists
     if 'auto-dnssec' not in modified_zone_block:
         modified_zone_block = modified_zone_block.rstrip('};') + '\n    auto-dnssec maintain;\n};'
+
+    print("after adding auto-dnssec -> modified_zone_block:", modified_zone_block)
 
     # Add or ensure `inline-signing yes` exists
     if 'inline-signing' not in modified_zone_block:
         modified_zone_block = modified_zone_block.rstrip('};') + '\n    inline-signing yes;\n};'
 
+    print("after adding inline-signing -> modified_zone_block:", modified_zone_block)
+
     # Replace the original zone block with the modified one in the full content
     modified_named_conf_content = (named_conf_content[:zone_block_start] +
                                    modified_zone_block +
                                    named_conf_content[zone_block_end:])
+
+    print("named_conf_content", modified_named_conf_content)
 
     # Write the modified content back to the named.conf.local file
     write_command = f'echo "{modified_named_conf_content}" > {named_conf_local_path}'
