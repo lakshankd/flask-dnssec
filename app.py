@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import paramiko
+import re
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -24,6 +25,26 @@ def execute_ssh_command(command):
     if ssh_client:
         try:
             stdin, stdout, stderr = ssh_client.exec_command(command)
+            stdout_data = stdout.read().decode('utf-8').strip()
+            stderr_data = stderr.read().decode('utf-8').strip()
+
+            if stderr_data:
+                return None, stderr_data
+            return stdout_data, None
+        except Exception as e:
+            return None, str(e)
+    else:
+        return None, "SSH session not active."
+
+
+def execute_ssh_command_with_sudo_password(command, password):
+    global ssh_client
+    if ssh_client:
+        try:
+            stdin, stdout, stderr = ssh_client.exec_command(f'echo {password} | sudo -S {command}')
+            stdin.write(password + '\n')
+            stdin.flush()
+
             stdout_data = stdout.read().decode('utf-8').strip()
             stderr_data = stderr.read().decode('utf-8').strip()
 
@@ -306,18 +327,15 @@ def apply_changes_request():
     if read_error:
         return jsonify({'error': f"Error reading named.conf.local file: {read_error}"}), 500
 
-    # Check if the zone exists in the file
     zone_start = f'zone "{zone_name}"'
     if zone_start not in named_conf_content:
         return jsonify({'error': f"Zone '{zone_name}' not found in named.conf.local"}), 404
 
-    # Locate the block that needs to be modified for the zone
     zone_block_start = named_conf_content.find(zone_start)
 
     if zone_block_start == -1:
         return jsonify({'error': f"Zone '{zone_name}' not found in named.conf.local"}), 404
 
-    # Manually parse the block by counting braces
     brace_count = 0
     zone_block_end = zone_block_start
     inside_zone_block = False
@@ -332,69 +350,81 @@ def apply_changes_request():
             brace_count -= 1
 
         if inside_zone_block and brace_count == 0:
-            zone_block_end = i + 1  # Include the closing brace
+            zone_block_end = i + 1
             break
 
-        # Extract the current zone block
     current_zone_block = named_conf_content[zone_block_start:zone_block_end]
 
-    # DEBUG: Show the extracted block
-    print("current_zone_block:", current_zone_block)
-
-    # Modify or add the necessary lines in the zone block
     file_pattern = f'file "/etc/bind/zones/{zone_name}"'
 
-    # Replace the `file` line with the signed file
     if file_pattern in current_zone_block:
-        # Correct the replacement to change the exact file directive
         modified_zone_block = current_zone_block.replace(
             file_pattern,
             f'file "/etc/bind/zones/{zone_name}.signed"'
         )
     else:
-        # Append the signed file directive if not present (though unlikely in this case)
         if f'file "/etc/bind/zones/{zone_name}.signed"' not in current_zone_block:
             modified_zone_block = current_zone_block.rstrip(
-                '};') + f'\n    file "/etc/bind/zones/db.{zone_name}.signed";\n}};'
+                '};') + f'\n    file "/etc/bind/zones/db.{zone_name}.signed";\n}}'
         else:
             modified_zone_block = current_zone_block
 
-    print("after adding file ->  modified_zone_block:", modified_zone_block)
+    key_directory_match = re.search(r'key-directory\s+"[^"]+";', modified_zone_block)
 
-    # Add `key-directory` if it doesn't exist
-    if 'key-directory' not in modified_zone_block:
-        modified_zone_block = modified_zone_block.rstrip('};') + '\n    key-directory "/etc/bind/keys";\n};'
+    existing_lines = re.findall(r'^\s+', modified_zone_block, re.MULTILINE)
+    if existing_lines:
+        indentation = existing_lines[0]
+    else:
+        indentation = "    "
 
-    print("after adding key-directory -> modified_zone_block:", modified_zone_block)
+    if key_directory_match:
+        modified_zone_block = modified_zone_block
+    else:
+        modified_zone_block = modified_zone_block.rstrip('\n ').rstrip(
+            '};') + f'{indentation}key-directory "/etc/bind/keys";\n}}'
 
-    # Add or ensure `auto-dnssec maintain` exists
-    if 'auto-dnssec' not in modified_zone_block:
-        modified_zone_block = modified_zone_block.rstrip('};') + '\n    auto-dnssec maintain;\n};'
+    auto_dnssec_match = re.search(r'auto-dnssec\s+"?[^";]+"?;', modified_zone_block)
 
-    print("after adding auto-dnssec -> modified_zone_block:", modified_zone_block)
+    existing_lines = re.findall(r'^\s+', modified_zone_block, re.MULTILINE)
+    if existing_lines:
+        indentation = existing_lines[0]
+    else:
+        indentation = "    "
 
-    # Add or ensure `inline-signing yes` exists
-    if 'inline-signing' not in modified_zone_block:
-        modified_zone_block = modified_zone_block.rstrip('};') + '\n    inline-signing yes;\n};'
+    if auto_dnssec_match:
+        modified_zone_block = re.sub(r'auto-dnssec\s+"?[^";]+"?;', f'{indentation}auto-dnssec maintain;',
+                                     modified_zone_block)
+    else:
+        modified_zone_block = modified_zone_block.rstrip('\n ').rstrip(
+            '};') + f'{indentation}auto-dnssec maintain;\n}}'
 
-    print("after adding inline-signing -> modified_zone_block:", modified_zone_block)
+    inline_signing_match = re.search(r'inline-signing\s+"?[^";]+"?;', modified_zone_block)
 
-    # Replace the original zone block with the modified one in the full content
+    existing_lines = re.findall(r'^\s+', modified_zone_block, re.MULTILINE)
+    if existing_lines:
+        indentation = existing_lines[0]
+    else:
+        indentation = "    "
+
+    if inline_signing_match:
+        modified_zone_block = re.sub(r'inline-signing\s+"?[^";]+"?;', f'{indentation}inline-signing yes;',
+                                     modified_zone_block)
+    else:
+        modified_zone_block = modified_zone_block.rstrip('\n ').rstrip(
+            '};') + f'{indentation}inline-signing yes;\n}}'
+
     modified_named_conf_content = (named_conf_content[:zone_block_start] +
                                    modified_zone_block +
                                    named_conf_content[zone_block_end:])
 
-    print("named_conf_content", modified_named_conf_content)
+    write_command = f'tee {named_conf_local_path} > /dev/null << EOF\n{modified_named_conf_content}\nEOF'
 
-    # Write the modified content back to the named.conf.local file
-    write_command = f'echo "{modified_named_conf_content}" > {named_conf_local_path}'
     _, write_error = execute_ssh_command(write_command)
 
     if write_error:
         return jsonify({'error': f"Error writing changes to named.conf.local file: {write_error}"}), 500
 
-    # Reload BIND configuration to apply changes
-    reload_command = 'rndc reload'
+    reload_command = 'systemctl restart bind9'
     _, reload_error = execute_ssh_command(reload_command)
 
     if reload_error:
