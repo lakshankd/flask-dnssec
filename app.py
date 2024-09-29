@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import paramiko
+import re
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -24,6 +25,26 @@ def execute_ssh_command(command):
     if ssh_client:
         try:
             stdin, stdout, stderr = ssh_client.exec_command(command)
+            stdout_data = stdout.read().decode('utf-8').strip()
+            stderr_data = stderr.read().decode('utf-8').strip()
+
+            if stderr_data:
+                return None, stderr_data
+            return stdout_data, None
+        except Exception as e:
+            return None, str(e)
+    else:
+        return None, "SSH session not active."
+
+
+def execute_ssh_command_with_sudo_password(command, password):
+    global ssh_client
+    if ssh_client:
+        try:
+            stdin, stdout, stderr = ssh_client.exec_command(f'echo {password} | sudo -S {command}')
+            stdin.write(password + '\n')
+            stdin.flush()
+
             stdout_data = stdout.read().decode('utf-8').strip()
             stderr_data = stderr.read().decode('utf-8').strip()
 
@@ -286,6 +307,133 @@ def apply_changes():
                                connection_status=connection_status)
     else:
         return redirect(url_for('login'))
+
+
+@app.route('/apply_changes_request', methods=['POST'])
+def apply_changes_request():
+    data = request.get_json()
+    zone_name = data.get('zone_name')
+
+    if not zone_name:
+        return jsonify({'error': 'Zone name is required.'}), 400
+
+    named_conf_local_path = '/etc/bind/named.conf.local'
+
+    read_command = f'cat {named_conf_local_path}'
+    named_conf_content, read_error = execute_ssh_command(read_command)
+
+    print("named.conf.local file content:", named_conf_content)
+
+    if read_error:
+        return jsonify({'error': f"Error reading named.conf.local file: {read_error}"}), 500
+
+    zone_start = f'zone "{zone_name}"'
+    if zone_start not in named_conf_content:
+        return jsonify({'error': f"Zone '{zone_name}' not found in named.conf.local"}), 404
+
+    zone_block_start = named_conf_content.find(zone_start)
+
+    if zone_block_start == -1:
+        return jsonify({'error': f"Zone '{zone_name}' not found in named.conf.local"}), 404
+
+    brace_count = 0
+    zone_block_end = zone_block_start
+    inside_zone_block = False
+
+    for i in range(zone_block_start, len(named_conf_content)):
+        char = named_conf_content[i]
+
+        if char == '{':
+            brace_count += 1
+            inside_zone_block = True
+        elif char == '}':
+            brace_count -= 1
+
+        if inside_zone_block and brace_count == 0:
+            zone_block_end = i + 1
+            break
+
+    current_zone_block = named_conf_content[zone_block_start:zone_block_end]
+
+    file_pattern = f'file "/etc/bind/zones/{zone_name}"'
+
+    if file_pattern in current_zone_block:
+        modified_zone_block = current_zone_block.replace(
+            file_pattern,
+            f'file "/etc/bind/zones/{zone_name}.signed"'
+        )
+    else:
+        if f'file "/etc/bind/zones/{zone_name}.signed"' not in current_zone_block:
+            modified_zone_block = current_zone_block.rstrip(
+                '};') + f'\n    file "/etc/bind/zones/db.{zone_name}.signed";\n}}'
+        else:
+            modified_zone_block = current_zone_block
+
+    key_directory_match = re.search(r'key-directory\s+"[^"]+";', modified_zone_block)
+
+    existing_lines = re.findall(r'^\s+', modified_zone_block, re.MULTILINE)
+    if existing_lines:
+        indentation = existing_lines[0]
+    else:
+        indentation = "    "
+
+    if key_directory_match:
+        modified_zone_block = modified_zone_block
+    else:
+        modified_zone_block = modified_zone_block.rstrip('\n ').rstrip(
+            '};') + f'{indentation}key-directory "/etc/bind/keys";\n}}'
+
+    auto_dnssec_match = re.search(r'auto-dnssec\s+"?[^";]+"?;', modified_zone_block)
+
+    existing_lines = re.findall(r'^\s+', modified_zone_block, re.MULTILINE)
+    if existing_lines:
+        indentation = existing_lines[0]
+    else:
+        indentation = "    "
+
+    if auto_dnssec_match:
+        modified_zone_block = re.sub(r'auto-dnssec\s+"?[^";]+"?;', f'{indentation}auto-dnssec maintain;',
+                                     modified_zone_block)
+    else:
+        modified_zone_block = modified_zone_block.rstrip('\n ').rstrip(
+            '};') + f'{indentation}auto-dnssec maintain;\n}}'
+
+    inline_signing_match = re.search(r'inline-signing\s+"?[^";]+"?;', modified_zone_block)
+
+    existing_lines = re.findall(r'^\s+', modified_zone_block, re.MULTILINE)
+    if existing_lines:
+        indentation = existing_lines[0]
+    else:
+        indentation = "    "
+
+    if inline_signing_match:
+        modified_zone_block = re.sub(r'inline-signing\s+"?[^";]+"?;', f'{indentation}inline-signing yes;',
+                                     modified_zone_block)
+    else:
+        modified_zone_block = modified_zone_block.rstrip('\n ').rstrip(
+            '};') + f'{indentation}inline-signing yes;\n}}'
+
+    modified_named_conf_content = (named_conf_content[:zone_block_start] +
+                                   modified_zone_block +
+                                   named_conf_content[zone_block_end:])
+
+    write_command = f'tee {named_conf_local_path} > /dev/null << EOF\n{modified_named_conf_content}\nEOF'
+
+    _, write_error = execute_ssh_command(write_command)
+
+    if write_error:
+        return jsonify({'error': f"Error writing changes to named.conf.local file: {write_error}"}), 500
+
+    reload_command = 'systemctl restart bind9'
+    _, reload_error = execute_ssh_command(reload_command)
+
+    if reload_error:
+        return jsonify({'error': f"Error reloading BIND configuration: {reload_error}"}), 500
+
+    return jsonify({
+        'success': True,
+        'message': f"Zone '{zone_name}' successfully updated and BIND reloaded."
+    }), 200
 
 
 @app.route('/statistics')

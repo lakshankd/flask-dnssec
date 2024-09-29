@@ -8,6 +8,16 @@
             &#8592; Dashboard
         </a>
         <h1 class="apply-changes-header">Apply Changes</h1>
+        <form class="apply-changes-form" id="apply-changes-form">
+            <label class="apply-changes-label" for="zone-file">Zone File</label>
+            <input class="apply-changes-input" type="text" id="zone-file" name="zone-file" value="db.example.test.com"
+                   placeholder="Enter your zone file name" required>
+
+            <button class="apply-changes-btn" type="button" id="apply-changes-btn">
+                Apply Changes
+            </button>
+        </form>
+        <p id="apply-changes-info" class="apply-changes-info" hidden="hidden"></p>
         <button class="next-step-btn" id="next-view-statistics-btn">
             Next: View Statistics &rarr;
         </button>
@@ -17,6 +27,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ url_for('static', filename='js/apply_changes.js') }}"></script>
     <script>
+        const applyChangesRequestUrl = "{{ url_for('apply_changes_request') }}";
         const viewStatisticsUrl = "{{ url_for('statistics') }}"
     </script>
 {% endblock %}
