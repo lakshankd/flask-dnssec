@@ -318,11 +318,10 @@ def apply_changes_request():
         return jsonify({'error': 'Zone name is required.'}), 400
 
     named_conf_local_path = '/etc/bind/named.conf.local'
+    named_conf_options_path = '/etc/bind/named.conf.options'
 
     read_command = f'cat {named_conf_local_path}'
     named_conf_content, read_error = execute_ssh_command(read_command)
-
-    print("named.conf.local file content:", named_conf_content)
 
     if read_error:
         return jsonify({'error': f"Error reading named.conf.local file: {read_error}"}), 500
@@ -423,6 +422,59 @@ def apply_changes_request():
 
     if write_error:
         return jsonify({'error': f"Error writing changes to named.conf.local file: {write_error}"}), 500
+
+    read_options_command = f'cat {named_conf_options_path}'
+    named_conf_options_content, read_options_error = execute_ssh_command(read_options_command)
+
+    if read_options_error:
+        return jsonify({'error': f"Error reading named.conf.options file: {read_options_error}"}), 500
+
+    lines = named_conf_options_content.split('\n')
+
+    found_provide_ixfr = False
+    found_dnssec_validation = False
+    found_dnssec_enable = False
+
+    updated_lines = []
+    inside_options_block = False
+
+    for line in lines:
+        stripped_line = line.strip()
+
+        if stripped_line.startswith('options {'):
+            inside_options_block = True
+        elif stripped_line.startswith('};') and inside_options_block:
+            if not found_provide_ixfr:
+                updated_lines.append('    provide-ixfr yes;')
+            if not found_dnssec_validation:
+                updated_lines.append('    dnssec-validation auto;')
+            if not found_dnssec_enable:
+                updated_lines.append('    dnssec-enable yes;')
+
+            inside_options_block = False
+
+        if inside_options_block:
+            if 'provide-ixfr' in stripped_line:
+                updated_lines.append(re.sub(r'provide-ixfr\s+"?[^";]+"?;', 'provide-ixfr yes;', line))
+                found_provide_ixfr = True
+            elif 'dnssec-validation' in stripped_line:
+                updated_lines.append(re.sub(r'dnssec-validation\s+"?[^";]+"?;', 'dnssec-validation auto;', line))
+                found_dnssec_validation = True
+            elif 'dnssec-enable' in stripped_line:
+                updated_lines.append(re.sub(r'dnssec-enable\s+"?[^";]+"?;', 'dnssec-enable yes;', line))
+                found_dnssec_enable = True
+            else:
+                updated_lines.append(line)
+        else:
+            updated_lines.append(line)
+
+    updated_named_conf_options_content = '\n'.join(updated_lines)
+
+    write_options_command = f'tee {named_conf_options_path} > /dev/null << EOF\n{updated_named_conf_options_content}\nEOF'
+    _, write_options_error = execute_ssh_command(write_options_command)
+
+    if write_options_error:
+        return jsonify({'error': f"Error writing changes to named.conf.options file: {write_options_error}"}), 500
 
     reload_command = 'systemctl restart bind9'
     _, reload_error = execute_ssh_command(reload_command)
