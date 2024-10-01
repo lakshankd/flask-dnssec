@@ -312,9 +312,9 @@ def apply_changes():
 @app.route('/apply_changes_request', methods=['POST'])
 def apply_changes_request():
     data = request.get_json()
-    zone_name = data.get('zone_name')
+    domain_name = data.get('domain_name')
 
-    if not zone_name:
+    if not domain_name:
         return jsonify({'error': 'Zone name is required.'}), 400
 
     named_conf_local_path = '/etc/bind/named.conf.local'

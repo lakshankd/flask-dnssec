@@ -592,6 +592,12 @@ form button:hover {
     box-sizing: border-box;
 }
 
+.apply-changes-loader {
+    font-size: 14px;
+    color: #333;
+    margin-top: 12px;
+}
+
 .apply-changes-btn:disabled {
     background-color: #aaa;
     cursor: not-allowed;

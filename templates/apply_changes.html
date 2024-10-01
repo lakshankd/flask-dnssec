@@ -9,14 +9,17 @@
         </a>
         <h1 class="apply-changes-header">Apply Changes</h1>
         <form class="apply-changes-form" id="apply-changes-form">
-            <label class="apply-changes-label" for="zone-file">Zone File</label>
-            <input class="apply-changes-input" type="text" id="zone-file" name="zone-file" value="db.example.test.com"
-                   placeholder="Enter your zone file name" required>
+            <label class="apply-changes-label" for="domain-name">Domain Name</label>
+            <input class="apply-changes-input" type="text" id="domain-name" name="domain-name" value="example.test.com"
+                   placeholder="Enter your domain name" required>
 
             <button class="apply-changes-btn" type="button" id="apply-changes-btn">
                 Apply Changes
             </button>
         </form>
+        <div class="apply-changes-loader" id="apply-changes-loader" hidden="hidden">
+            <i class="fa fa-spinner fa-spin"></i> Loading...
+        </div>
         <p id="apply-changes-info" class="apply-changes-info" hidden="hidden"></p>
         <button class="next-step-btn" id="next-view-statistics-btn">
             Next: View Statistics &rarr;
