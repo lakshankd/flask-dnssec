@@ -15,13 +15,18 @@ $(document).ready(function () {
     checkInputs();
 
     $('#apply-changes-btn').click(function () {
-        const zoneFile = $('#zone-file').val();
+        const domainName = $('#domain-name').val();
 
         $.ajax({
             url: applyChangesRequestUrl,
             type: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({zone_name: zoneFile}),
+            data: JSON.stringify({domain_name: domainName}),
+
+            beforeSend: function () {
+                $('#apply-changes-loader').show();
+            },
+
             success: function (response) {
                 console.log("success function called")
                 $('.apply-changes-info')
@@ -37,6 +42,10 @@ $(document).ready(function () {
                     .html(`<i class="fa fa-exclamation-circle"></i> ${errorResponse}`)
                     .show();
                 console.error(errorResponse);
+            },
+
+            complete: function () {
+                $('#apply-changes-loader').hide();
             }
         });
     });

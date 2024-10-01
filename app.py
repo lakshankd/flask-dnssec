@@ -312,10 +312,10 @@ def apply_changes():
 @app.route('/apply_changes_request', methods=['POST'])
 def apply_changes_request():
     data = request.get_json()
-    zone_name = data.get('zone_name')
+    domain_name = data.get('domain_name')
 
-    if not zone_name:
-        return jsonify({'error': 'Zone name is required.'}), 400
+    if not domain_name:
+        return jsonify({'error': 'Domain name is required.'}), 400
 
     named_conf_local_path = '/etc/bind/named.conf.local'
     named_conf_options_path = '/etc/bind/named.conf.options'
@@ -326,14 +326,14 @@ def apply_changes_request():
     if read_error:
         return jsonify({'error': f"Error reading named.conf.local file: {read_error}"}), 500
 
-    zone_start = f'zone "{zone_name}"'
+    zone_start = f'zone "{domain_name}"'
     if zone_start not in named_conf_content:
-        return jsonify({'error': f"Zone '{zone_name}' not found in named.conf.local"}), 404
+        return jsonify({'error': f"Domain name '{domain_name}' not found in named.conf.local"}), 404
 
     zone_block_start = named_conf_content.find(zone_start)
 
     if zone_block_start == -1:
-        return jsonify({'error': f"Zone '{zone_name}' not found in named.conf.local"}), 404
+        return jsonify({'error': f"Domain name '{domain_name}' not found in named.conf.local"}), 404
 
     brace_count = 0
     zone_block_end = zone_block_start
@@ -354,17 +354,17 @@ def apply_changes_request():
 
     current_zone_block = named_conf_content[zone_block_start:zone_block_end]
 
-    file_pattern = f'file "/etc/bind/zones/{zone_name}"'
+    file_pattern = f'file "/etc/bind/zones/db.{domain_name}"'
 
     if file_pattern in current_zone_block:
         modified_zone_block = current_zone_block.replace(
             file_pattern,
-            f'file "/etc/bind/zones/{zone_name}.signed"'
+            f'file "/etc/bind/zones/db.{domain_name}.signed"'
         )
     else:
-        if f'file "/etc/bind/zones/{zone_name}.signed"' not in current_zone_block:
+        if f'file "/etc/bind/zones/db.{domain_name}.signed"' not in current_zone_block:
             modified_zone_block = current_zone_block.rstrip(
-                '};') + f'\n    file "/etc/bind/zones/db.{zone_name}.signed";\n}}'
+                '};') + f'\n    file "/etc/bind/zones/db.{domain_name}.signed";\n}}'
         else:
             modified_zone_block = current_zone_block
 
@@ -484,7 +484,7 @@ def apply_changes_request():
 
     return jsonify({
         'success': True,
-        'message': f"Zone '{zone_name}' successfully updated and BIND reloaded."
+        'message': f"Zone for '{domain_name}' successfully updated and BIND reloaded."
     }), 200
 
 
