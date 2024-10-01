@@ -482,9 +482,16 @@ def apply_changes_request():
     if reload_error:
         return jsonify({'error': f"Error reloading BIND configuration: {reload_error}"}), 500
 
+    rndc_command = f'rndc signing -list {domain_name}'
+    rndc_output, rndc_error = execute_ssh_command(rndc_command)
+
+    if rndc_error:
+        return jsonify({'error': f"Error occurred while listing DS records: {rndc_error}"}), 500
+
     return jsonify({
         'success': True,
-        'message': f"Zone for '{domain_name}' successfully updated and BIND reloaded."
+        'message': f"Zone for '{domain_name}' successfully updated and BIND reloaded.",
+        'rndc_output': rndc_output
     }), 200
 
 

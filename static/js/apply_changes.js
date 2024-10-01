@@ -33,6 +33,8 @@ $(document).ready(function () {
                     .addClass('success-backup-message')
                     .html(`<i class="fa fa-check-circle"></i> ${response.message}`)
                     .show();
+                $('#apply-changes-command-output').text(response.rndc_output);
+                $('#apply-changes-dsset-output-section').show();
             },
             error: function (xhr) {
                 console.log("error function called")
