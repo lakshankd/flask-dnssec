@@ -28,7 +28,6 @@ $(document).ready(function () {
             },
 
             success: function (response) {
-                console.log("success function called")
                 $('.apply-changes-info')
                     .addClass('success-backup-message')
                     .html(`<i class="fa fa-check-circle"></i> ${response.message}`)
@@ -37,7 +36,6 @@ $(document).ready(function () {
                 $('#apply-changes-dsset-output-section').show();
             },
             error: function (xhr) {
-                console.log("error function called")
                 const errorResponse = xhr.responseJSON ? xhr.responseJSON.error : 'An error occurred';
                 $('.apply-changes-info')
                     .addClass('error-backup-message')
