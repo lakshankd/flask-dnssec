@@ -354,19 +354,21 @@ def apply_changes_request():
 
     current_zone_block = named_conf_content[zone_block_start:zone_block_end]
 
-    file_pattern = f'file "/etc/bind/zones/db.{domain_name}"'
+    # file_pattern = f'file "/etc/bind/zones/db.{domain_name}"'
+    #
+    # if file_pattern in current_zone_block:
+    #     modified_zone_block = current_zone_block.replace(
+    #         file_pattern,
+    #         f'file "/etc/bind/zones/db.{domain_name}.signed"'
+    #     )
+    # else:
+    #     if f'file "/etc/bind/zones/db.{domain_name}.signed"' not in current_zone_block:
+    #         modified_zone_block = current_zone_block.rstrip(
+    #             '};') + f'\n    file "/etc/bind/zones/db.{domain_name}.signed";\n}}'
+    #     else:
+    #         modified_zone_block = current_zone_block
 
-    if file_pattern in current_zone_block:
-        modified_zone_block = current_zone_block.replace(
-            file_pattern,
-            f'file "/etc/bind/zones/db.{domain_name}.signed"'
-        )
-    else:
-        if f'file "/etc/bind/zones/db.{domain_name}.signed"' not in current_zone_block:
-            modified_zone_block = current_zone_block.rstrip(
-                '};') + f'\n    file "/etc/bind/zones/db.{domain_name}.signed";\n}}'
-        else:
-            modified_zone_block = current_zone_block
+    modified_zone_block = current_zone_block
 
     key_directory_match = re.search(r'key-directory\s+"[^"]+";', modified_zone_block)
 
@@ -476,7 +478,7 @@ def apply_changes_request():
     if write_options_error:
         return jsonify({'error': f"Error writing changes to named.conf.options file: {write_options_error}"}), 500
 
-    reload_command = 'systemctl restart bind9'
+    reload_command = 'rndc reconfig'
     _, reload_error = execute_ssh_command(reload_command)
 
     if reload_error:
