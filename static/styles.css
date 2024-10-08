@@ -427,7 +427,7 @@ form button:hover {
     border: none;
     padding: 12px 25px;
     margin: 0 15px;
-    border-radius: 10px;
+    border-radius: 5px;
     cursor: pointer;
     font-size: 12px;
     display: flex;
@@ -499,19 +499,21 @@ form button:hover {
     color: #333;
 }
 
-update-zone-file-button {
-    background-color: #007bff;
+.update-zone-file-btn {
+    padding: 12px;
+    margin-bottom: 10px;
+    background-color: #0070c9;
     color: white;
     border: none;
-    padding: 10px 20px;
-    margin-top: 20px;
-    border-radius: 8px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-update-zone-file-button:hover {
-    background-color: #0056b3;
+.update-zone-file-btn:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
 }
 
 

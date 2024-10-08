@@ -1,6 +1,6 @@
 {% extends "base_with_navbar.html" %}
 
-{% block title %}Backup DNS Zone - DNSSEC Guardian{% endblock %}
+{% block title %}Update Zone File - DNSSEC Guardian{% endblock %}
 
 {% block content %}
     <div class="backup-container">
@@ -26,7 +26,7 @@
 
         <div class="update-zone-file-form-container">
             <!-- Add A Record Form -->
-            <div id="update-zone-file-add-a-record-form" class="update-zone-file-form-section">
+            <div id="update-zone-file-add-a-record-form" class="update-zone-file-form-section" hidden="hidden">
                 <h3>Add A Record</h3>
                 <form class="update-zone-file-form">
                     <label for="add-nameserver-ip" class="update-zone-file-label">Nameserver IP:</label>
@@ -47,12 +47,12 @@
                     <label for="add-ip" class="update-zone-file-label">IP Address:</label>
                     <input class="update-zone-file-input" type="text" id="add-ip" placeholder="192.0.2.1" required>
 
-                    <button type="submit">Add A Record</button>
+                    <button type="submit" id="add-a-record-btn" class="update-zone-file-btn">Add A Record</button>
                 </form>
             </div>
 
             <!-- Update A Record Form -->
-            <div id="update-zone-file-update-a-record-form" class="update-zone-file-form-section">
+            <div id="update-zone-file-update-a-record-form" class="update-zone-file-form-section" hidden="hidden">
                 <h3>Update A Record</h3>
                 <form class="update-zone-file-form">
                     <label for="update-nameserver-ip" class="update-zone-file-label">Nameserver IP:</label>
@@ -74,12 +74,12 @@
                     <input class="update-zone-file-input" type="text" id="update-new-ip" placeholder="203.0.113.1"
                            required>
 
-                    <button type="submit">Update A Record</button>
+                    <button type="submit" id="update-a-record-btn" class="update-zone-file-btn">Update A Record</button>
                 </form>
             </div>
 
             <!-- Delete A Record Form -->
-            <div id="update-zone-file-delete-a-record-form" class="update-zone-file-form-section">
+            <div id="update-zone-file-delete-a-record-form" class="update-zone-file-form-section" hidden="hidden">
                 <h3>Delete A Record</h3>
                 <form class="update-zone-file-form">
                     <label for="delete-nameserver-ip" class="update-zone-file-label">Nameserver IP:</label>
@@ -94,11 +94,14 @@
                     <input class="update-zone-file-input" type="text" id="delete-domain-name"
                            placeholder="www.example.com" required>
 
-                    <button type="submit">Delete A Record</button>
+                    <button type="submit" id="delete-a-record-btn" class="update-zone-file-btn">Delete A Record</button>
                 </form>
             </div>
         </div>
 
+        <button class="next-step-btn" id="next-generate-keys-btn">
+            Next: Generate Keys &rarr;
+        </button>
     </div>
 
     <!-- scripts -->
