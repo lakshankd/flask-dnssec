@@ -8,10 +8,10 @@
         <p>Select an action below to manage DNSSEC configurations.</p>
 
         <div class="cards-container">
-            <div class="card" onclick="location.href='{{ url_for('backup_zone') }}'">
+            <div class="card" onclick="location.href='{{ url_for('file_operations') }}'">
                 <i class="fas fa-file-alt"></i>
-                <h3>Backup DNS Zone</h3>
-                <p>Backup the DNS zone file securely.</p>
+                <h3>Zone File Operations</h3>
+                <p>Backup and Update the DNS zone file securely.</p>
             </div>
 
             <div class="card" onclick="location.href='{{ url_for('generate_keys') }}'">
@@ -34,7 +34,8 @@
         </div>
 
         <div class="statistics-button-container">
-            <button class="statistics-btn" onclick="location.href='{{ url_for('statistics') }}'">View Statistics</button>
+            <button class="statistics-btn" onclick="location.href='{{ url_for('statistics') }}'">View Statistics
+            </button>
         </div>
     </div>
 {% endblock %}

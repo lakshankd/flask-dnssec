@@ -109,6 +109,19 @@ def logout():
     return redirect(url_for('login'))
 
 
+@app.route('/file_operations')
+def file_operations():
+    global ssh_client
+    if ssh_client:
+        hostname = session.get('hostname')
+        username = session.get('username')
+        connection_status = session.get('ssh_connection', False)
+        return render_template('file_operations.html', hostname=hostname, username=username,
+                               connection_status=connection_status)
+    else:
+        return redirect(url_for('login'))
+
+
 @app.route('/backup_zone')
 def backup_zone():
     global ssh_client
@@ -120,6 +133,17 @@ def backup_zone():
                                connection_status=connection_status)
     else:
         return redirect(url_for('login'))
+
+
+@app.route('/update_zone_file')
+def update_zone_file():
+    global ssh_client
+    if ssh_client:
+        hostname = session.get('hostname')
+        username = session.get('username')
+        connection_status = session.get('ssh_connection', False)
+        return render_template('update_zone_file.html', hostname=hostname, username=username,
+                               connection_status=connection_status)
 
 
 @app.route('/check_zone_file_availability', methods=['POST'])
@@ -354,19 +378,21 @@ def apply_changes_request():
 
     current_zone_block = named_conf_content[zone_block_start:zone_block_end]
 
-    file_pattern = f'file "/etc/bind/zones/db.{domain_name}"'
+    # file_pattern = f'file "/etc/bind/zones/db.{domain_name}"'
+    #
+    # if file_pattern in current_zone_block:
+    #     modified_zone_block = current_zone_block.replace(
+    #         file_pattern,
+    #         f'file "/etc/bind/zones/db.{domain_name}.signed"'
+    #     )
+    # else:
+    #     if f'file "/etc/bind/zones/db.{domain_name}.signed"' not in current_zone_block:
+    #         modified_zone_block = current_zone_block.rstrip(
+    #             '};') + f'\n    file "/etc/bind/zones/db.{domain_name}.signed";\n}}'
+    #     else:
+    #         modified_zone_block = current_zone_block
 
-    if file_pattern in current_zone_block:
-        modified_zone_block = current_zone_block.replace(
-            file_pattern,
-            f'file "/etc/bind/zones/db.{domain_name}.signed"'
-        )
-    else:
-        if f'file "/etc/bind/zones/db.{domain_name}.signed"' not in current_zone_block:
-            modified_zone_block = current_zone_block.rstrip(
-                '};') + f'\n    file "/etc/bind/zones/db.{domain_name}.signed";\n}}'
-        else:
-            modified_zone_block = current_zone_block
+    modified_zone_block = current_zone_block
 
     key_directory_match = re.search(r'key-directory\s+"[^"]+";', modified_zone_block)
 
@@ -476,7 +502,7 @@ def apply_changes_request():
     if write_options_error:
         return jsonify({'error': f"Error writing changes to named.conf.options file: {write_options_error}"}), 500
 
-    reload_command = 'systemctl restart bind9'
+    reload_command = 'rndc reconfig'
     _, reload_error = execute_ssh_command(reload_command)
 
     if reload_error:

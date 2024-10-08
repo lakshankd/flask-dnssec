@@ -1,0 +1,115 @@
+{% extends "base_with_navbar.html" %}
+
+{% block title %}Update Zone File - DNSSEC Guardian{% endblock %}
+
+{% block content %}
+    <div class="backup-container">
+        <a href="{{ url_for('file_operations') }}" class="back-arrow">
+            &#8592; File Operations
+        </a>
+        <h2 class="backup-header">Update Zone File</h2>
+
+        <div class="update-zone-file-button-container">
+            <button id="update-zone-file-show-add-form" class="update-zone-file-action-btn">
+                <i class="fas fa-plus-circle"></i>
+                Add
+            </button>
+            <button id="update-zone-file-show-update-form" class="update-zone-file-action-btn">
+                <i class="fas fa-sync-alt"></i>
+                Update
+            </button>
+            <button id="update-zone-file-show-delete-form" class="update-zone-file-action-btn">
+                <i class="fas fa-trash-alt"></i>
+                Delete
+            </button>
+        </div>
+
+        <div class="update-zone-file-form-container">
+            <!-- Add A Record Form -->
+            <div id="update-zone-file-add-a-record-form" class="update-zone-file-form-section" hidden="hidden">
+                <h3>Add A Record</h3>
+                <form class="update-zone-file-form">
+                    <label for="add-nameserver-ip" class="update-zone-file-label">Nameserver IP:</label>
+                    <input class="update-zone-file-input" type="text" id="add-nameserver-ip"
+                           placeholder="Enter nameserver IP" required>
+
+                    <label for="add-zone-name" class="update-zone-file-label">Zone Name:</label>
+                    <input class="update-zone-file-input" type="text" id="add-zone-name" placeholder="Enter zone name"
+                           required>
+
+                    <label for="add-domain-name" class="update-zone-file-label">Domain Name:</label>
+                    <input class="update-zone-file-input" type="text" id="add-domain-name" placeholder="www.example.com"
+                           required>
+
+                    <label for="add-ttl" class="update-zone-file-label">TTL:</label>
+                    <input class="update-zone-file-input" type="number" id="add-ttl" placeholder="3600" required>
+
+                    <label for="add-ip" class="update-zone-file-label">IP Address:</label>
+                    <input class="update-zone-file-input" type="text" id="add-ip" placeholder="192.0.2.1" required>
+
+                    <button type="submit" id="add-a-record-btn" class="update-zone-file-btn">Add A Record</button>
+                </form>
+            </div>
+
+            <!-- Update A Record Form -->
+            <div id="update-zone-file-update-a-record-form" class="update-zone-file-form-section" hidden="hidden">
+                <h3>Update A Record</h3>
+                <form class="update-zone-file-form">
+                    <label for="update-nameserver-ip" class="update-zone-file-label">Nameserver IP:</label>
+                    <input class="update-zone-file-input" type="text" id="update-nameserver-ip"
+                           placeholder="Enter nameserver IP" required>
+
+                    <label for="update-zone-name" class="update-zone-file-label">Zone Name:</label>
+                    <input class="update-zone-file-input" type="text" id="update-zone-name"
+                           placeholder="Enter zone name" required>
+
+                    <label for="update-domain-name" class="update-zone-file-label">Domain Name:</label>
+                    <input class="update-zone-file-input" type="text" id="update-domain-name"
+                           placeholder="www.example.com" required>
+
+                    <label for="update-ttl" class="update-zone-file-label">TTL:</label>
+                    <input class="update-zone-file-input" type="number" id="update-ttl" placeholder="3600" required>
+
+                    <label for="update-new-ip" class="update-zone-file-label">New IP Address:</label>
+                    <input class="update-zone-file-input" type="text" id="update-new-ip" placeholder="203.0.113.1"
+                           required>
+
+                    <button type="submit" id="update-a-record-btn" class="update-zone-file-btn">Update A Record</button>
+                </form>
+            </div>
+
+            <!-- Delete A Record Form -->
+            <div id="update-zone-file-delete-a-record-form" class="update-zone-file-form-section" hidden="hidden">
+                <h3>Delete A Record</h3>
+                <form class="update-zone-file-form">
+                    <label for="delete-nameserver-ip" class="update-zone-file-label">Nameserver IP:</label>
+                    <input class="update-zone-file-input" type="text" id="delete-nameserver-ip"
+                           placeholder="Enter nameserver IP" required>
+
+                    <label for="delete-zone-name" class="update-zone-file-label">Zone Name:</label>
+                    <input class="update-zone-file-input" type="text" id="delete-zone-name"
+                           placeholder="Enter zone name" required>
+
+                    <label for="delete-domain-name" class="update-zone-file-label">Domain Name:</label>
+                    <input class="update-zone-file-input" type="text" id="delete-domain-name"
+                           placeholder="www.example.com" required>
+
+                    <button type="submit" id="delete-a-record-btn" class="update-zone-file-btn">Delete A Record</button>
+                </form>
+            </div>
+        </div>
+
+        <button class="next-step-btn" id="next-generate-keys-btn">
+            Next: Generate Keys &rarr;
+        </button>
+    </div>
+
+    <!-- scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/update_zone_file.js') }}"></script>
+    <script>
+        const checkZoneFileAvailabilityUrl = "{{ url_for('check_zone_file_availability') }}";
+        const confirmBackupZoneFileUrl = "{{ url_for('confirm_backup_zone_file') }}";
+        const generateKeysUrl = "{{ url_for('generate_keys') }}"
+    </script>
+{% endblock %}
