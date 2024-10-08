@@ -437,6 +437,26 @@ form button:hover {
     transition: background-color 0.3s ease;
 }
 
+.update-zone-file-form {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.update-zone-file-label {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.update-zone-file-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
 #update-zone-file-show-add-form {
     background-color: #4CAF50;
 }
@@ -468,14 +488,14 @@ form button:hover {
 }
 
 .update-zone-file-form-section {
-    display: none;
+    /*display: none;*/
     padding: 20px;
     background-color: #f9f9f9;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.update-zone-file-form-section h2 {
+.update-zone-file-form-section h3 {
     color: #333;
 }
 
@@ -493,6 +513,7 @@ update-zone-file-button {
 update-zone-file-button:hover {
     background-color: #0056b3;
 }
+
 
 /* End of Update Zone File*/
 

@@ -24,6 +24,81 @@
             </button>
         </div>
 
+        <div class="update-zone-file-form-container">
+            <!-- Add A Record Form -->
+            <div id="update-zone-file-add-a-record-form" class="update-zone-file-form-section">
+                <h3>Add A Record</h3>
+                <form class="update-zone-file-form">
+                    <label for="add-nameserver-ip" class="update-zone-file-label">Nameserver IP:</label>
+                    <input class="update-zone-file-input" type="text" id="add-nameserver-ip"
+                           placeholder="Enter nameserver IP" required>
+
+                    <label for="add-zone-name" class="update-zone-file-label">Zone Name:</label>
+                    <input class="update-zone-file-input" type="text" id="add-zone-name" placeholder="Enter zone name"
+                           required>
+
+                    <label for="add-domain-name" class="update-zone-file-label">Domain Name:</label>
+                    <input class="update-zone-file-input" type="text" id="add-domain-name" placeholder="www.example.com"
+                           required>
+
+                    <label for="add-ttl" class="update-zone-file-label">TTL:</label>
+                    <input class="update-zone-file-input" type="number" id="add-ttl" placeholder="3600" required>
+
+                    <label for="add-ip" class="update-zone-file-label">IP Address:</label>
+                    <input class="update-zone-file-input" type="text" id="add-ip" placeholder="192.0.2.1" required>
+
+                    <button type="submit">Add A Record</button>
+                </form>
+            </div>
+
+            <!-- Update A Record Form -->
+            <div id="update-zone-file-update-a-record-form" class="update-zone-file-form-section">
+                <h3>Update A Record</h3>
+                <form class="update-zone-file-form">
+                    <label for="update-nameserver-ip" class="update-zone-file-label">Nameserver IP:</label>
+                    <input class="update-zone-file-input" type="text" id="update-nameserver-ip"
+                           placeholder="Enter nameserver IP" required>
+
+                    <label for="update-zone-name" class="update-zone-file-label">Zone Name:</label>
+                    <input class="update-zone-file-input" type="text" id="update-zone-name"
+                           placeholder="Enter zone name" required>
+
+                    <label for="update-domain-name" class="update-zone-file-label">Domain Name:</label>
+                    <input class="update-zone-file-input" type="text" id="update-domain-name"
+                           placeholder="www.example.com" required>
+
+                    <label for="update-ttl" class="update-zone-file-label">TTL:</label>
+                    <input class="update-zone-file-input" type="number" id="update-ttl" placeholder="3600" required>
+
+                    <label for="update-new-ip" class="update-zone-file-label">New IP Address:</label>
+                    <input class="update-zone-file-input" type="text" id="update-new-ip" placeholder="203.0.113.1"
+                           required>
+
+                    <button type="submit">Update A Record</button>
+                </form>
+            </div>
+
+            <!-- Delete A Record Form -->
+            <div id="update-zone-file-delete-a-record-form" class="update-zone-file-form-section">
+                <h3>Delete A Record</h3>
+                <form class="update-zone-file-form">
+                    <label for="delete-nameserver-ip" class="update-zone-file-label">Nameserver IP:</label>
+                    <input class="update-zone-file-input" type="text" id="delete-nameserver-ip"
+                           placeholder="Enter nameserver IP" required>
+
+                    <label for="delete-zone-name" class="update-zone-file-label">Zone Name:</label>
+                    <input class="update-zone-file-input" type="text" id="delete-zone-name"
+                           placeholder="Enter zone name" required>
+
+                    <label for="delete-domain-name" class="update-zone-file-label">Domain Name:</label>
+                    <input class="update-zone-file-input" type="text" id="delete-domain-name"
+                           placeholder="www.example.com" required>
+
+                    <button type="submit">Delete A Record</button>
+                </form>
+            </div>
+        </div>
+
     </div>
 
     <!-- scripts -->
