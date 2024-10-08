@@ -414,6 +414,88 @@ form button:hover {
 
 /*  End of Backup Zone CSS  */
 
+/* Update Zone File */
+.update-zone-file-button-container {
+    text-align: center;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.update-zone-file-action-btn {
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    margin: 0 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background-color 0.3s ease;
+}
+
+#update-zone-file-show-add-form {
+    background-color: #4CAF50;
+}
+
+#update-zone-file-show-add-form:hover {
+    background-color: #45a049;
+}
+
+/* Update A Record Button */
+#update-zone-file-show-update-form {
+    background-color: #FFA500;
+}
+
+#update-zone-file-show-update-form:hover {
+    background-color: #e69500;
+}
+
+/* Delete A Record Button */
+#update-zone-file-show-delete-form {
+    background-color: #ff3b30;
+}
+
+#update-zone-file-show-delete-form:hover {
+    background-color: #e5563c;
+}
+
+.update-zone-file-action-btn i {
+    font-size: 16px;
+}
+
+.update-zone-file-form-section {
+    display: none;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.update-zone-file-form-section h2 {
+    color: #333;
+}
+
+update-zone-file-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+update-zone-file-button:hover {
+    background-color: #0056b3;
+}
+
+/* End of Update Zone File*/
+
 /* Generate Keys CSS*/
 .generate-keys-container {
     background-color: white;

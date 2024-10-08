@@ -109,6 +109,19 @@ def logout():
     return redirect(url_for('login'))
 
 
+@app.route('/file_operations')
+def file_operations():
+    global ssh_client
+    if ssh_client:
+        hostname = session.get('hostname')
+        username = session.get('username')
+        connection_status = session.get('ssh_connection', False)
+        return render_template('file_operations.html', hostname=hostname, username=username,
+                               connection_status=connection_status)
+    else:
+        return redirect(url_for('login'))
+
+
 @app.route('/backup_zone')
 def backup_zone():
     global ssh_client
@@ -120,6 +133,17 @@ def backup_zone():
                                connection_status=connection_status)
     else:
         return redirect(url_for('login'))
+
+
+@app.route('/update_zone_file')
+def update_zone_file():
+    global ssh_client
+    if ssh_client:
+        hostname = session.get('hostname')
+        username = session.get('username')
+        connection_status = session.get('ssh_connection', False)
+        return render_template('update_zone_file.html', hostname=hostname, username=username,
+                               connection_status=connection_status)
 
 
 @app.route('/check_zone_file_availability', methods=['POST'])

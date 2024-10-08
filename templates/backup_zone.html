@@ -4,8 +4,8 @@
 
 {% block content %}
     <div class="backup-container">
-        <a href="{{ url_for('dashboard') }}" class="back-arrow">
-            &#8592; Dashboard
+        <a href="{{ url_for('file_operations') }}" class="back-arrow">
+            &#8592; File Operations
         </a>
         <h2 class="backup-header">Backup Zone File</h2>
 
@@ -37,8 +37,8 @@
 
         <p id="backup-message" class="backup-message" hidden="hidden"></p>
 
-        <button class="next-step-btn" id="next-generate-keys-btn">
-            Next: Generate Keys &rarr;
+        <button class="next-step-btn" id="next-update-zone-file-btn">
+            Next: Update Zone File &rarr;
         </button>
     </div>
 
@@ -48,6 +48,6 @@
     <script>
         const checkZoneFileAvailabilityUrl = "{{ url_for('check_zone_file_availability') }}";
         const confirmBackupZoneFileUrl = "{{ url_for('confirm_backup_zone_file') }}";
-        const generateKeysUrl = "{{ url_for('generate_keys') }}"
+        const updateZoneFileUrl = "{{ url_for('update_zone_file') }}"
     </script>
 {% endblock %}

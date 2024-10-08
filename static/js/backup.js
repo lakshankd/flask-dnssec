@@ -82,7 +82,7 @@ $(document).ready(function () {
         });
     });
 
-    $('#next-generate-keys-btn').click(function () {
-        window.location.href = generateKeysUrl;
+    $('#next-update-zone-file-btn').click(function () {
+        window.location.href = updateZoneFileUrl;
     });
 });

@@ -1,0 +1,33 @@
+{% extends "base_with_navbar.html" %}
+
+{% block title %}File Operations - DNSSEC Guardian{% endblock %}
+
+{% block content %}
+    <div class="dashboard-container">
+        <a href="{{ url_for('dashboard') }}" class="back-arrow">
+            &#8592; Dashboard
+        </a>
+        <p>File Operations</p>
+
+        <div class="cards-container">
+            <div class="card" onclick="location.href='{{ url_for('backup_zone') }}'">
+                <i class="fa fa-cloud-download-alt"></i>
+                <h3>Backup Zone File</h3>
+                <p>Backup the DNS zone file securely.</p>
+            </div>
+
+            <div class="card" onclick="location.href='{{ url_for('update_zone_file') }}'">
+                <i class="fa fa-edit"></i>
+                <h3>Update Zone File</h3>
+                <p>Update the DNS Zone file securely.</p>
+            </div>
+
+        </div>
+
+        <div class="statistics-button-container">
+            <button class="next-step-btn" id="next-generate-keys-btn">
+                Next: Generate Keys &rarr;
+            </button>
+        </div>
+    </div>
+{% endblock %}

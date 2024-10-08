@@ -1,0 +1,37 @@
+{% extends "base_with_navbar.html" %}
+
+{% block title %}Backup DNS Zone - DNSSEC Guardian{% endblock %}
+
+{% block content %}
+    <div class="backup-container">
+        <a href="{{ url_for('file_operations') }}" class="back-arrow">
+            &#8592; File Operations
+        </a>
+        <h2 class="backup-header">Update Zone File</h2>
+
+        <div class="update-zone-file-button-container">
+            <button id="update-zone-file-show-add-form" class="update-zone-file-action-btn">
+                <i class="fas fa-plus-circle"></i>
+                Add
+            </button>
+            <button id="update-zone-file-show-update-form" class="update-zone-file-action-btn">
+                <i class="fas fa-sync-alt"></i>
+                Update
+            </button>
+            <button id="update-zone-file-show-delete-form" class="update-zone-file-action-btn">
+                <i class="fas fa-trash-alt"></i>
+                Delete
+            </button>
+        </div>
+
+    </div>
+
+    <!-- scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/update_zone_file.js') }}"></script>
+    <script>
+        const checkZoneFileAvailabilityUrl = "{{ url_for('check_zone_file_availability') }}";
+        const confirmBackupZoneFileUrl = "{{ url_for('confirm_backup_zone_file') }}";
+        const generateKeysUrl = "{{ url_for('generate_keys') }}"
+    </script>
+{% endblock %}
