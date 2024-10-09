@@ -144,6 +144,8 @@ def update_zone_file():
         connection_status = session.get('ssh_connection', False)
         return render_template('update_zone_file.html', hostname=hostname, username=username,
                                connection_status=connection_status)
+    else:
+        return redirect(url_for('login'))
 
 
 @app.route('/check_zone_file_availability', methods=['POST'])
@@ -195,6 +197,101 @@ def confirm_backup_zone_file():
             'message': f"File successfully backed up to {backup_location}",
             'backup_location': backup_location
         }), 200
+
+
+@app.route('/add_a_record', methods=['POST'])
+def add_a_record():
+    data = request.get_json()
+    nameserver_ip = data.get('nameserver_ip')
+    zone = data.get('zone_name')
+    domain_name = data.get('domain_name')
+    ip_address = data.get('ip')
+    ttl = data.get('ttl', 3600)  # Default TTL to 3600 if not provided
+
+    if not nameserver_ip or not zone or not domain_name or not ip_address:
+        return jsonify({'error': 'Nameserver IP, zone, domain name, and IP address are required.'}), 400
+
+    command = f"""
+    nsupdate <<EOF
+    server {nameserver_ip}
+    zone {zone}
+    update add {domain_name} {ttl} A {ip_address}
+    send
+    EOF
+    """
+
+    output, error = execute_ssh_command(command)
+
+    if error:
+        return jsonify({'error': f"Error adding the A record: {error}"}), 500
+
+    return jsonify({
+        'success': True,
+        'message': f"A record for {domain_name} successfully added with IP {ip_address} and TTL {ttl}.\nOutput: {output}"
+    }), 200
+
+
+@app.route('/update_a_record', methods=['POST'])
+def update_a_record():
+    data = request.get_json()
+    nameserver_ip = data.get('nameserver_ip')
+    zone = data.get('zone_name')
+    domain_name = data.get('domain_name')
+    new_ip_address = data.get('new_ip')
+    ttl = data.get('ttl', 3600)  # Default TTL to 3600 if not provided
+
+    if not nameserver_ip or not zone or not domain_name or not new_ip_address:
+        return jsonify({'error': 'Nameserver IP, zone, domain name, and new IP address are required.'}), 400
+
+    command = f"""
+    nsupdate <<EOF
+    server {nameserver_ip}
+    zone {zone}
+    update delete {domain_name} A
+    update add {domain_name} {ttl} A {new_ip_address}
+    send
+    EOF
+    """
+
+    output, error = execute_ssh_command(command)
+
+    if error:
+        return jsonify({'error': f"Error updating the A record: {error}"}), 500
+
+    return jsonify({
+        'success': True,
+        'message': f"A record for {domain_name} successfully updated to IP {new_ip_address} with TTL {ttl}.\nOutput: {output}"
+    }), 200
+
+
+@app.route('/delete_a_record', methods=['POST'])
+def delete_a_record():
+    data = request.get_json()
+    nameserver_ip = data.get('nameserver_ip')
+    zone = data.get('zone_name')
+    domain_name = data.get('domain_name')
+
+    if not nameserver_ip or not zone or not domain_name:
+        return jsonify({'error': 'Nameserver IP, zone, and domain name are required.'}), 400
+
+    command = f"""
+    nsupdate <<EOF
+    server {nameserver_ip}
+    zone {zone}
+    update delete {domain_name} A
+    send
+    EOF
+    """
+
+    output, error = execute_ssh_command(command)
+
+    if error:
+        return jsonify({'error': f"Error deleting the A record: {error}"}), 500
+
+    return jsonify({
+        'success': True,
+        'message': f"A record for {domain_name} successfully deleted.\nOutput: {output}"
+    }), 200
 
 
 @app.route('/generate_keys')

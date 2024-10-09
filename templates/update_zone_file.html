@@ -22,6 +22,7 @@
                 <i class="fas fa-trash-alt"></i>
                 Delete
             </button>
+
         </div>
 
         <div class="update-zone-file-form-container">
@@ -48,6 +49,8 @@
                     <input class="update-zone-file-input" type="text" id="add-ip" placeholder="192.0.2.1" required>
 
                     <button type="submit" id="add-a-record-btn" class="update-zone-file-btn">Add A Record</button>
+
+                    <p id="add-a-record-info" class="add-a-record-info" hidden="hidden"></p>
                 </form>
             </div>
 
@@ -75,6 +78,8 @@
                            required>
 
                     <button type="submit" id="update-a-record-btn" class="update-zone-file-btn">Update A Record</button>
+
+                    <p id="update-a-record-info" class="update-a-record-info" hidden="hidden"></p>
                 </form>
             </div>
 
@@ -95,6 +100,8 @@
                            placeholder="www.example.com" required>
 
                     <button type="submit" id="delete-a-record-btn" class="update-zone-file-btn">Delete A Record</button>
+
+                    <p id="delete-a-record-info" class="delete-a-record-info" hidden="hidden"></p>
                 </form>
             </div>
         </div>
@@ -111,5 +118,8 @@
         const checkZoneFileAvailabilityUrl = "{{ url_for('check_zone_file_availability') }}";
         const confirmBackupZoneFileUrl = "{{ url_for('confirm_backup_zone_file') }}";
         const generateKeysUrl = "{{ url_for('generate_keys') }}"
+        const addRecordUrl = "{{ url_for('add_a_record') }}"
+        const updateRecordUrl = "{{ url_for('update_a_record') }}"
+        const deleteRecordUrl = "{{ url_for('delete_a_record') }}"
     </script>
 {% endblock %}

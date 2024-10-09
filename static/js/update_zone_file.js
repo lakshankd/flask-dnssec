@@ -75,6 +75,112 @@ $(document).ready(function () {
 
     checkInputs()
 
+    $('#add-a-record-btn').click(function (event) {
+        event.preventDefault();
+
+        const nameServerIP = $('#add-nameserver-ip').val();
+        const zoneName = $('#add-zone-name').val();
+        const domainName = $('#add-domain-name').val();
+        const ttl = $('#add-ttl').val();
+        const ip = $('#add-ip').val();
+
+        $.ajax({
+            url: addRecordUrl,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                nameserver_ip: nameServerIP,
+                zone_name: zoneName,
+                domain_name: domainName,
+                ttl: ttl,
+                ip: ip
+            }),
+            success: function (response) {
+                $('#add-a-record-info')
+                    .addClass('success-backup-message')
+                    .html(`<i class="fa fa-check-circle"></i> ${response.message}`)
+                    .show();
+            },
+            error: function (xhr) {
+                const errorResponse = xhr.responseJSON ? xhr.responseJSON.error : 'An error occurred';
+                $('#add-a-record-info')
+                    .addClass('error-backup-message')
+                    .html(`<i class="fa fa-exclamation-circle"></i> ${errorResponse}`)
+                    .show();
+                console.error(errorResponse);
+            }
+        });
+    });
+
+    $('#update-a-record-btn').click(function (event) {
+        event.preventDefault();
+
+        const nameServerIP = $('#update-nameserver-ip').val();
+        const zoneName = $('#update-zone-name').val();
+        const domainName = $('#update-domain-name').val();
+        const ttl = $('#update-ttl').val();
+        const newIP = $('#update-new-ip').val();
+
+        $.ajax({
+            url: updateRecordUrl,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                nameserver_ip: nameServerIP,
+                zone_name: zoneName,
+                domain_name: domainName,
+                ttl: ttl,
+                new_ip: newIP
+            }),
+            success: function (response) {
+                $('#update-a-record-info')
+                    .addClass('success-backup-message')
+                    .html(`<i class="fa fa-check-circle"></i> ${response.message}`)
+                    .show();
+            },
+            error: function (xhr) {
+                const errorResponse = xhr.responseJSON ? xhr.responseJSON.error : 'An error occurred';
+                $('#update-a-record-info')
+                    .addClass('error-backup-message')
+                    .html(`<i class="fa fa-exclamation-circle"></i> ${errorResponse}`)
+                    .show();
+                console.error(errorResponse);
+            }
+        });
+    });
+
+    $('#delete-a-record-btn').click(function (event) {
+        event.preventDefault();
+
+        const nameServerIP = $('#delete-nameserver-ip').val();
+        const zoneName = $('#delete-zone-name').val();
+        const domainName = $('#delete-domain-name').val();
+
+        $.ajax({
+            url: deleteRecordUrl,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                nameserver_ip: nameServerIP,
+                zone_name: zoneName,
+                domain_name: domainName
+            }),
+            success: function (response) {
+                $('#delete-a-record-info')
+                    .addClass('success-backup-message')
+                    .html(`<i class="fa fa-check-circle"></i> ${response.message}`)
+                    .show();
+            },
+            error: function (xhr) {
+                const errorResponse = xhr.responseJSON ? xhr.responseJSON.error : 'An error occurred';
+                $('#delete-a-record-info')
+                    .addClass('error-backup-message')
+                    .html(`<i class="fa fa-exclamation-circle"></i> ${errorResponse}`)
+                    .show();
+                console.error(errorResponse);
+            }
+        });
+    });
 
     $('#next-generate-keys-btn').click(function () {
         window.location.href = generateKeysUrl;

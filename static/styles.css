@@ -26,6 +26,13 @@ body {
 }
 
 /* Navbar styles */
+nav {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
 .navbar {
     display: flex;
     justify-content: space-between;
