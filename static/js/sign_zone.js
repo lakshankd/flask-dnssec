@@ -30,6 +30,9 @@ $(document).ready(function () {
                 keys_directory: keysDirectory,
                 zone_file_path: zoneFilePath
             }),
+            beforeSend: function () {
+                $('#sign-zone-loader').show();
+            },
             success: function (response) {
                 $('#sign-zone-info')
                     .addClass('success-backup-message')
@@ -43,6 +46,9 @@ $(document).ready(function () {
                     .html(`<i class="fa fa-exclamation-circle"></i> ${errorResponse}`)
                     .show();
                 console.error(errorResponse);
+            },
+            complete: function () {
+                $('#sign-zone-loader').hide();
             }
         });
     });

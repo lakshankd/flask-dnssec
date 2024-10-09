@@ -43,7 +43,6 @@ $(document).ready(function () {
                     .show();
                 console.error(errorResponse);
             },
-
             complete: function () {
                 $('#apply-changes-loader').hide();
             }

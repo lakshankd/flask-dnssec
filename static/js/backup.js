@@ -27,6 +27,10 @@ $(document).ready(function () {
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({zone_path: zonePath, file_name: fileName}),
+
+            beforeSend: function () {
+                $('#backup-availability-loader').show();
+            },
             success: function (response) {
                 if (response.available) {
                     $('#backup-availability-info')
@@ -48,6 +52,9 @@ $(document).ready(function () {
                     .html(`<i class="fa fa-times-circle"></i> An unexpected error occurred.`)
                     .show();
                 $('#confirm-backup-btn').prop('disabled', true);
+            },
+            complete: function () {
+                $('#backup-availability-loader').hide();
             }
         });
     });
@@ -62,6 +69,10 @@ $(document).ready(function () {
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({zone_path: zonePath, file_name: fileName}),
+
+            beforeSend: function () {
+                $('#confirm-backup-loader').show();
+            },
             success: function (response) {
                 $('#backup-message')
                     .addClass('success-backup-message')
@@ -78,6 +89,9 @@ $(document).ready(function () {
                         `<i class="fa fa-exclamation-circle"></i> ${errorResponse}`
                     )
                     .show();
+            },
+            complete: function () {
+                $('#confirm-backup-loader').hide();
             }
         });
     });
