@@ -95,6 +95,9 @@ $(document).ready(function () {
                 ttl: ttl,
                 ip: ip
             }),
+            beforeSend: function () {
+                $('#add-a-record-loader').show();
+            },
             success: function (response) {
                 $('#add-a-record-info')
                     .addClass('success-backup-message')
@@ -108,6 +111,9 @@ $(document).ready(function () {
                     .html(`<i class="fa fa-exclamation-circle"></i> ${errorResponse}`)
                     .show();
                 console.error(errorResponse);
+            },
+            complete: function () {
+                $('#add-a-record-loader').hide();
             }
         });
     });
@@ -132,6 +138,9 @@ $(document).ready(function () {
                 ttl: ttl,
                 new_ip: newIP
             }),
+            beforeSend: function () {
+                $('#update-a-record-loader').show();
+            },
             success: function (response) {
                 $('#update-a-record-info')
                     .addClass('success-backup-message')
@@ -145,6 +154,8 @@ $(document).ready(function () {
                     .html(`<i class="fa fa-exclamation-circle"></i> ${errorResponse}`)
                     .show();
                 console.error(errorResponse);
+            }, complete: function () {
+                $('#update-a-record-loader').hide();
             }
         });
     });
@@ -165,6 +176,9 @@ $(document).ready(function () {
                 zone_name: zoneName,
                 domain_name: domainName
             }),
+            beforeSend: function () {
+                $('#delete-a-record-loader').show();
+            },
             success: function (response) {
                 $('#delete-a-record-info')
                     .addClass('success-backup-message')
@@ -178,6 +192,9 @@ $(document).ready(function () {
                     .html(`<i class="fa fa-exclamation-circle"></i> ${errorResponse}`)
                     .show();
                 console.error(errorResponse);
+            },
+            complete: function () {
+                $('#delete-a-record-loader').hide();
             }
         });
     });

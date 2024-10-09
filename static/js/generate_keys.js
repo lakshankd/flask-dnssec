@@ -69,6 +69,9 @@ $(document).ready(function () {
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({algorithm: algorithm, key_size: keySize, domain_name: domainName}),
+            beforeSend: function () {
+                $('#zsk-key-loader').show();
+            },
             success: function (response) {
                 $('#zsk-key-info')
                     .addClass('success-backup-message')
@@ -82,6 +85,9 @@ $(document).ready(function () {
                     .html(`<i class="fa fa-exclamation-circle"></i> ${errorResponse}`)
                     .show();
                 console.error(errorResponse)
+            },
+            complete: function () {
+                $('#zsk-key-loader').hide();
             }
         });
     });
@@ -96,6 +102,9 @@ $(document).ready(function () {
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({algorithm: algorithm, key_size: keySize, domain_name: domainName}),
+            beforeSend: function () {
+                $('#ksk-key-loader').show();
+            },
             success: function (response) {
                 console.log(response)
                 $('#ksk-key-info')
@@ -110,6 +119,9 @@ $(document).ready(function () {
                     .html(`<i class="fa fa-exclamation-circle"></i> ${errorResponse}`)
                     .show();
                 console.error(errorResponse)
+            },
+            complete: function () {
+                $('#ksk-key-loader').hide();
             }
         });
     });
