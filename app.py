@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import paramiko
 import re
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -185,13 +186,19 @@ def confirm_backup_zone_file():
     if error:
         return jsonify({'error': f"Error creating backup folder: {error}"}), 500
 
-    command = f'cp {zone_path}/{file_name} {backup_zone_path}/{file_name}.backup'
+    current_time = datetime.now()
+    date_str = current_time.strftime("%Y-%m-%d")
+    time_str = current_time.strftime("%H-%M-%S")
+
+    backup_file_name = f"{file_name}_{date_str}_{time_str}.backup"
+
+    command = f'cp {zone_path}/{file_name} {backup_zone_path}/{backup_file_name}'
     output, error = execute_ssh_command(command)
 
     if error:
         return jsonify({'error': f"Error occurred while backing up the file: {error}"}), 500
     else:
-        backup_location = f"{backup_zone_path}/{file_name}.backup"
+        backup_location = f"{backup_zone_path}/{backup_file_name}"
         return jsonify({
             'success': True,
             'message': f"File successfully backed up to {backup_location}",
