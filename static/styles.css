@@ -762,6 +762,54 @@ form button:hover {
     margin-bottom: 30px;
 }
 
+.statistics-form {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.statistics-label {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.statistics-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.statistics-input:disabled {
+    cursor: not-allowed;
+}
+
+.get-statistics-btn {
+    padding: 12px;
+    margin-bottom: 10px;
+    background-color: #0070c9;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.get-statistics-btn:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
+.statistics-loader {
+    font-size: 14px;
+    color: #333;
+    margin-top: 12px;
+}
+
+
 /* View Statistics */
 
 /*Loader*/

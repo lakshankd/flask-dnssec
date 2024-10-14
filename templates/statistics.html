@@ -8,6 +8,34 @@
             &#8592; Dashboard
         </a>
         <h1 class="statistics-header">Statistics</h1>
+
+        <form class="statistics-form" id="statistics-form">
+            <label class="statistics-label" for="statistics-hostname">Hostname</label>
+            <input class="statistics-input" type="text" id="statistics-hostname" name="statistics-hostname"
+                   placeholder="Enter your hostname" value={{ hostname }} required>
+
+            <label class="statistics-label" for="statistics-domain">Domain</label>
+            <input class="statistics-input" type="text" id="statistics-domain" name="statistics-domain"
+                   placeholder="Enter your domain name" required>
+
+            <label class="statistics-label" for="statistics-command">Command</label>
+            <select class="statistics-input" id="statistics-command" name="statistics-command" required>
+                <option value="dnskey">DNSKEY</option>
+                <option value="soa">SOA</option>
+            </select>
+
+            <button class="get-statistics-btn" type="button" id="get-statistics-btn">
+                Get Statistics
+            </button>
+
+            <div class="statistics-loader" id="statistics-loader" hidden="hidden">
+                <i class="fa fa-spinner fa-spin"></i> Loading...
+            </div>
+
+            <p id="statistics-info" class="statistics-info" hidden="hidden"></p>
+        </form>
+
+
         <button class="next-step-btn" id="prev-backup-zone-file-btn">
             &#8592; Prev: Backup Zone File
         </button>
@@ -18,5 +46,6 @@
     <script src="{{ url_for('static', filename='js/statistics.js') }}"></script>
     <script>
         const backupZoneFileUrl = "{{ url_for('backup_zone') }}"
+        const getStatisticsUrl = "{{ url_for('get_statistics') }}"
     </script>
 {% endblock %}

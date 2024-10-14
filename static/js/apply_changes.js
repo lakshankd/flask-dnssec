@@ -33,6 +33,7 @@ $(document).ready(function () {
                     .html(`<i class="fa fa-check-circle"></i> ${response.message}`)
                     .show();
                 $('#apply-changes-command-output').text(response.rndc_output);
+                $('#apply-changes-command-output-dsset').text(response.dsset_cat_command_output);
                 $('#apply-changes-dsset-output-section').show();
             },
             error: function (xhr) {
