@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import paramiko
 import re
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -185,13 +186,19 @@ def confirm_backup_zone_file():
     if error:
         return jsonify({'error': f"Error creating backup folder: {error}"}), 500
 
-    command = f'cp {zone_path}/{file_name} {backup_zone_path}/{file_name}.backup'
+    current_time = datetime.now()
+    date_str = current_time.strftime("%Y-%m-%d")
+    time_str = current_time.strftime("%H-%M-%S")
+
+    backup_file_name = f"{file_name}_{date_str}_{time_str}.backup"
+
+    command = f'cp {zone_path}/{file_name} {backup_zone_path}/{backup_file_name}'
     output, error = execute_ssh_command(command)
 
     if error:
         return jsonify({'error': f"Error occurred while backing up the file: {error}"}), 500
     else:
-        backup_location = f"{backup_zone_path}/{file_name}.backup"
+        backup_location = f"{backup_zone_path}/{backup_file_name}"
         return jsonify({
             'success': True,
             'message': f"File successfully backed up to {backup_location}",
@@ -211,7 +218,16 @@ def add_a_record():
     if not nameserver_ip or not zone or not domain_name or not ip_address:
         return jsonify({'error': 'Nameserver IP, zone, domain name, and IP address are required.'}), 400
 
-    command = f"""
+    # command = f"""
+    # nsupdate <<EOF
+    # server {nameserver_ip}
+    # zone {zone}
+    # update add {domain_name} {ttl} A {ip_address}
+    # send
+    # EOF
+    # """
+
+    nsupdate_command = f"""
     nsupdate <<EOF
     server {nameserver_ip}
     zone {zone}
@@ -220,7 +236,10 @@ def add_a_record():
     EOF
     """
 
-    output, error = execute_ssh_command(command)
+    # echo - e
+    # "server <DNS_SERVER_IP>\nzone <ZONE_NAME>\nupdate add <DOMAIN> <TTL> A <IP_ADDRESS>\nsend" | nsupdate
+
+    output, error = execute_ssh_command(nsupdate_command)
 
     if error:
         return jsonify({'error': f"Error adding the A record: {error}"}), 500
@@ -399,10 +418,10 @@ def sign_zone_request():
     if chown_keys_error:
         return jsonify({'error': f"Error changing ownership of keys directory: {chown_keys_error}"}), 500
 
-    chown_zones_command = f'chown -R bind:bind /etc/bind/zones'
-    _, chown_zones_error = execute_ssh_command(chown_zones_command)
-    if chown_zones_error:
-        return jsonify({'error': f"Error changing ownership of zones directory: {chown_zones_error}"}), 500
+    # chown_zones_command = f'chown -R bind:bind /etc/bind/zones'
+    # _, chown_zones_error = execute_ssh_command(chown_zones_command)
+    # if chown_zones_error:
+    #     return jsonify({'error': f"Error changing ownership of zones directory: {chown_zones_error}"}), 500
 
     sign_command = f'cd /etc/bind/zones && dnssec-signzone -S -K {keys_directory} -o {origin} {zone_file_path}'
     output, sign_error = execute_ssh_command(sign_command)
@@ -505,7 +524,7 @@ def apply_changes_request():
         modified_zone_block = modified_zone_block.rstrip('\n ').rstrip(
             '};') + f'{indentation}key-directory "/etc/bind/keys";\n}}'
 
-    auto_dnssec_match = re.search(r'auto-dnssec\s+"?[^";]+"?;', modified_zone_block)
+    auto_dnssec_match = re.search(r'dnssec-policy\s+"?[^";]+"?;', modified_zone_block)
 
     existing_lines = re.findall(r'^\s+', modified_zone_block, re.MULTILINE)
     if existing_lines:
@@ -514,11 +533,11 @@ def apply_changes_request():
         indentation = "    "
 
     if auto_dnssec_match:
-        modified_zone_block = re.sub(r'auto-dnssec\s+"?[^";]+"?;', f'{indentation}auto-dnssec maintain;',
+        modified_zone_block = re.sub(r'dnssec-policy\s+"?[^";]+"?;', f'{indentation}dnssec-policy default;',
                                      modified_zone_block)
     else:
         modified_zone_block = modified_zone_block.rstrip('\n ').rstrip(
-            '};') + f'{indentation}auto-dnssec maintain;\n}}'
+            '};') + f'{indentation}dnssec-policy default;\n}}'
 
     inline_signing_match = re.search(r'inline-signing\s+"?[^";]+"?;', modified_zone_block)
 
@@ -571,8 +590,8 @@ def apply_changes_request():
                 updated_lines.append('    provide-ixfr yes;')
             if not found_dnssec_validation:
                 updated_lines.append('    dnssec-validation auto;')
-            if not found_dnssec_enable:
-                updated_lines.append('    dnssec-enable yes;')
+            # if not found_dnssec_enable:
+            #     updated_lines.append('    dnssec-enable yes;')
 
             inside_options_block = False
 
@@ -583,9 +602,9 @@ def apply_changes_request():
             elif 'dnssec-validation' in stripped_line:
                 updated_lines.append(re.sub(r'dnssec-validation\s+"?[^";]+"?;', 'dnssec-validation auto;', line))
                 found_dnssec_validation = True
-            elif 'dnssec-enable' in stripped_line:
-                updated_lines.append(re.sub(r'dnssec-enable\s+"?[^";]+"?;', 'dnssec-enable yes;', line))
-                found_dnssec_enable = True
+            # elif 'dnssec-enable' in stripped_line:
+            #     updated_lines.append(re.sub(r'dnssec-enable\s+"?[^";]+"?;', 'dnssec-enable yes;', line))
+            #     found_dnssec_enable = True
             else:
                 updated_lines.append(line)
         else:
@@ -605,16 +624,24 @@ def apply_changes_request():
     if reload_error:
         return jsonify({'error': f"Error reloading BIND configuration: {reload_error}"}), 500
 
-    rndc_command = f'rndc signing -list {domain_name}'
+    # rndc_command = f'rndc signing -list {domain_name}'
+    rndc_command = f'rndc dnssec -status {domain_name}'
     rndc_output, rndc_error = execute_ssh_command(rndc_command)
 
     if rndc_error:
         return jsonify({'error': f"Error occurred while listing DS records: {rndc_error}"}), 500
 
+    dsset_cat_command = f'cd /etc/bind/zones && cat dsset-{domain_name}.'
+    dsset_cat_command_output, dsset_cat_command_error = execute_ssh_command(dsset_cat_command)
+
+    if dsset_cat_command_error:
+        return jsonify({'error': f"Error occurred while getting dsset: {dsset_cat_command_error}"}), 500
+
     return jsonify({
         'success': True,
         'message': f"Zone for '{domain_name}' successfully updated and BIND reloaded.",
-        'rndc_output': rndc_output
+        'rndc_output': rndc_output,
+        'dsset_cat_command_output': dsset_cat_command_output
     }), 200
 
 
@@ -629,6 +656,35 @@ def statistics():
                                connection_status=connection_status)
     else:
         return redirect(url_for('login'))
+
+
+@app.route('/get_statistics', methods=['POST'])
+def get_statistics():
+    data = request.get_json()
+    hostname = data.get('hostname')
+    domain = data.get('domain')
+    command_selected = data.get('command')
+
+    if not hostname or not domain or not command_selected:
+        return jsonify({'error': 'Hostname, Domain, and Command Type are required.'}), 400
+
+    if command_selected == 'dnskey':
+        command = f"dig DNSKEY {domain} @{hostname} +dnssec +multi"
+    elif command_selected == 'soa':
+        command = f"dig SOA {domain} @{hostname} +dnssec +multi"
+    else:
+        return jsonify({'error': 'Invalid command selected.'}), 400
+
+    output, error = execute_ssh_command(command)
+
+    if error:
+        return jsonify({'error': f"Error running command: {error}"}), 500
+
+    return jsonify({
+        'success': True,
+        'message': 'Successfully got statistics',
+        'output': output
+    }), 200
 
 
 if __name__ == '__main__':
