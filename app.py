@@ -635,7 +635,7 @@ def get_statistics():
     return jsonify({
         'success': True,
         'message': 'Successfully got statistics',
-        'output': output
+        'output': output.replace("\n", "</br>")
     }), 200
 
 

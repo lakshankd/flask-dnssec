@@ -18,6 +18,8 @@ $(document).ready(function () {
 
     checkInputs();
 
+    $('#statistics-info-content').hide();
+
     $('#get-statistics-btn').click(function () {
         const hostname = $('#statistics-hostname').val();
         const domain = $('#statistics-domain').val();
@@ -38,8 +40,12 @@ $(document).ready(function () {
             success: function (response) {
                 $('#statistics-info')
                     .addClass('success-backup-message')
-                    .html(`<i class="fa fa-check-circle"></i> ${response.message + ". Output: " + response.output}`)
+                    .html(`<i class="fa fa-check-circle"></i> ${response.message}`)
                     .show();
+
+                $('#statistics-info-content')
+                    .html(response.output)
+                    .show()
             },
             error: function (xhr) {
                 const errorResponse = xhr.responseJSON ? xhr.responseJSON.error : 'An error occurred';
