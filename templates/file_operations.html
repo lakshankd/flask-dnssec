@@ -30,4 +30,13 @@
             </button>
         </div>
     </div>
+
+
+    <!-- scripts -->
+    <script>
+        document.getElementById('next-generate-keys-btn').onclick = function () {
+            window.location.href = "{{ url_for('generate_keys') }}";
+        };
+    </script>
+
 {% endblock %}
