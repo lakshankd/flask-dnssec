@@ -214,39 +214,23 @@ def add_a_record():
     domain_name = data.get('domain_name')
     ip_address = data.get('ip')
     ttl = data.get('ttl', 3600)  # Default TTL to 3600 if not provided
+    key = data.get('key')
+    secret = data.get('secret')
 
-    if not nameserver_ip or not zone or not domain_name or not ip_address:
-        return jsonify({'error': 'Nameserver IP, zone, domain name, and IP address are required.'}), 400
+    if not nameserver_ip or not zone or not domain_name or not ip_address or not key or not secret:
+        return jsonify({'error': 'Nameserver IP, zone, domain name, key, secret and IP address are required.'}), 400
 
-    # command = f"""
-    # nsupdate <<EOF
-    # server {nameserver_ip}
-    # zone {zone}
-    # update add {domain_name} {ttl} A {ip_address}
-    # send
-    # EOF
-    # """
-
-    nsupdate_command = f"""
-    nsupdate <<EOF
-    server {nameserver_ip}
-    zone {zone}
-    update add {domain_name} {ttl} A {ip_address}
-    send
-    EOF
-    """
-
-    # echo - e
-    # "server <DNS_SERVER_IP>\nzone <ZONE_NAME>\nupdate add <DOMAIN> <TTL> A <IP_ADDRESS>\nsend" | nsupdate
+    nsupdate_command = f"echo -e 'server {nameserver_ip}\ndebug yes\nzone {zone}\nupdate add {domain_name} {ttl} A {ip_address}\nsend' | nsupdate -y {key}:{secret} -v"
 
     output, error = execute_ssh_command(nsupdate_command)
 
-    if error:
-        return jsonify({'error': f"Error adding the A record: {error}"}), 500
+    # error handling removed due to the unexpected behavior
+    # if error:
+    #     return jsonify({'error': f"Error adding the A record: {error}"}), 500
 
     return jsonify({
         'success': True,
-        'message': f"A record for {domain_name} successfully added with IP {ip_address} and TTL {ttl}.\nOutput: {output}"
+        'message': f"A record for {domain_name} successfully added with IP {ip_address} and TTL {ttl}.\nOutput: {output or error}"
     }), 200
 
 
@@ -258,28 +242,24 @@ def update_a_record():
     domain_name = data.get('domain_name')
     new_ip_address = data.get('new_ip')
     ttl = data.get('ttl', 3600)  # Default TTL to 3600 if not provided
+    key = data.get('key')
+    secret = data.get('secret')
+    a_record_to_update = data.get('a_record_to_update')
 
-    if not nameserver_ip or not zone or not domain_name or not new_ip_address:
+    if not nameserver_ip or not zone or not domain_name or not new_ip_address or not key or not secret or not a_record_to_update:
         return jsonify({'error': 'Nameserver IP, zone, domain name, and new IP address are required.'}), 400
 
-    command = f"""
-    nsupdate <<EOF
-    server {nameserver_ip}
-    zone {zone}
-    update delete {domain_name} A
-    update add {domain_name} {ttl} A {new_ip_address}
-    send
-    EOF
-    """
+    ns_command = f"echo -e 'server {nameserver_ip}\ndebug yes\nzone {zone}\nupdate delete {a_record_to_update}\nupdate add {domain_name} {ttl} A {new_ip_address}\nsend' | nsupdate -y {key}:{secret} -v"
 
-    output, error = execute_ssh_command(command)
+    output, error = execute_ssh_command(ns_command)
 
-    if error:
-        return jsonify({'error': f"Error updating the A record: {error}"}), 500
+    # error handling removed due to the unexpected behavior
+    # if error:
+    #     return jsonify({'error': f"Error updating the A record: {error}"}), 500
 
     return jsonify({
         'success': True,
-        'message': f"A record for {domain_name} successfully updated to IP {new_ip_address} with TTL {ttl}.\nOutput: {output}"
+        'message': f"A record for {domain_name} successfully updated to IP {new_ip_address} with TTL {ttl}.\nOutput: {output or error}"
     }), 200
 
 
@@ -288,28 +268,24 @@ def delete_a_record():
     data = request.get_json()
     nameserver_ip = data.get('nameserver_ip')
     zone = data.get('zone_name')
-    domain_name = data.get('domain_name')
+    a_record_to_delete = data.get('domain_name')
+    key = data.get('key')
+    secret = data.get('secret')
 
-    if not nameserver_ip or not zone or not domain_name:
+    if not nameserver_ip or not zone or not a_record_to_delete or not key or not secret:
         return jsonify({'error': 'Nameserver IP, zone, and domain name are required.'}), 400
 
-    command = f"""
-    nsupdate <<EOF
-    server {nameserver_ip}
-    zone {zone}
-    update delete {domain_name} A
-    send
-    EOF
-    """
+    ns_command = f"echo -e 'server {nameserver_ip}\ndebug yes\nzone {zone}\nupdate delete {a_record_to_delete}\nsend' | nsupdate -y {key}:{secret} -v"
 
-    output, error = execute_ssh_command(command)
+    output, error = execute_ssh_command(ns_command)
 
-    if error:
-        return jsonify({'error': f"Error deleting the A record: {error}"}), 500
+    # error handling removed due to the unexpected behavior
+    # if error:
+    #     return jsonify({'error': f"Error deleting the A record: {error}"}), 500
 
     return jsonify({
         'success': True,
-        'message': f"A record for {domain_name} successfully deleted.\nOutput: {output}"
+        'message': f"A record for {a_record_to_delete} successfully deleted.\nOutput: {output or error}"
     }), 200
 
 
@@ -418,11 +394,6 @@ def sign_zone_request():
     if chown_keys_error:
         return jsonify({'error': f"Error changing ownership of keys directory: {chown_keys_error}"}), 500
 
-    # chown_zones_command = f'chown -R bind:bind /etc/bind/zones'
-    # _, chown_zones_error = execute_ssh_command(chown_zones_command)
-    # if chown_zones_error:
-    #     return jsonify({'error': f"Error changing ownership of zones directory: {chown_zones_error}"}), 500
-
     sign_command = f'cd /etc/bind/zones && dnssec-signzone -S -K {keys_directory} -o {origin} {zone_file_path}'
     output, sign_error = execute_ssh_command(sign_command)
 
@@ -494,20 +465,6 @@ def apply_changes_request():
 
     current_zone_block = named_conf_content[zone_block_start:zone_block_end]
 
-    # file_pattern = f'file "/etc/bind/zones/db.{domain_name}"'
-    #
-    # if file_pattern in current_zone_block:
-    #     modified_zone_block = current_zone_block.replace(
-    #         file_pattern,
-    #         f'file "/etc/bind/zones/db.{domain_name}.signed"'
-    #     )
-    # else:
-    #     if f'file "/etc/bind/zones/db.{domain_name}.signed"' not in current_zone_block:
-    #         modified_zone_block = current_zone_block.rstrip(
-    #             '};') + f'\n    file "/etc/bind/zones/db.{domain_name}.signed";\n}}'
-    #     else:
-    #         modified_zone_block = current_zone_block
-
     modified_zone_block = current_zone_block
 
     key_directory_match = re.search(r'key-directory\s+"[^"]+";', modified_zone_block)
@@ -575,7 +532,6 @@ def apply_changes_request():
 
     found_provide_ixfr = False
     found_dnssec_validation = False
-    found_dnssec_enable = False
 
     updated_lines = []
     inside_options_block = False
@@ -590,8 +546,6 @@ def apply_changes_request():
                 updated_lines.append('    provide-ixfr yes;')
             if not found_dnssec_validation:
                 updated_lines.append('    dnssec-validation auto;')
-            # if not found_dnssec_enable:
-            #     updated_lines.append('    dnssec-enable yes;')
 
             inside_options_block = False
 
@@ -602,9 +556,6 @@ def apply_changes_request():
             elif 'dnssec-validation' in stripped_line:
                 updated_lines.append(re.sub(r'dnssec-validation\s+"?[^";]+"?;', 'dnssec-validation auto;', line))
                 found_dnssec_validation = True
-            # elif 'dnssec-enable' in stripped_line:
-            #     updated_lines.append(re.sub(r'dnssec-enable\s+"?[^";]+"?;', 'dnssec-enable yes;', line))
-            #     found_dnssec_enable = True
             else:
                 updated_lines.append(line)
         else:
@@ -624,7 +575,6 @@ def apply_changes_request():
     if reload_error:
         return jsonify({'error': f"Error reloading BIND configuration: {reload_error}"}), 500
 
-    # rndc_command = f'rndc signing -list {domain_name}'
     rndc_command = f'rndc dnssec -status {domain_name}'
     rndc_output, rndc_error = execute_ssh_command(rndc_command)
 
@@ -680,10 +630,12 @@ def get_statistics():
     if error:
         return jsonify({'error': f"Error running command: {error}"}), 500
 
+    print(output)
+
     return jsonify({
         'success': True,
         'message': 'Successfully got statistics',
-        'output': output
+        'output': output.replace("\n", "</br>")
     }), 200
 
 

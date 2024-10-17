@@ -37,6 +37,9 @@ $(document).ready(function () {
         const addDomainName = $('#add-domain-name').val()
         const addTTL = $('#add-ttl').val()
         const addIP = $('#add-ip').val()
+        const addKey = $('#add-key').val()
+        const addSecret = $('#add-secret').val()
+
 
         // update a record inputs
         const updateNameServerIP = $('#update-nameserver-ip').val()
@@ -44,34 +47,39 @@ $(document).ready(function () {
         const updateDomainName = $('#update-domain-name').val()
         const updateTTL = $('#update-ttl').val()
         const updateIP = $('#update-new-ip').val()
+        const updateKey = $('#update-key').val()
+        const updateSecret = $('#update-secret').val()
+        const updateARecordToUpdate = $('#update-a-record-to-update').val()
 
         // delete a record inputs
         const deleteNameServerIP = $('#delete-nameserver-ip').val()
         const deleteZoneName = $('#delete-zone-name').val()
         const deleteDomainName = $('#delete-domain-name').val()
+        const deleteKey = $('#delete-key').val()
+        const deleteSecret = $('#delete-secret').val()
 
-        if (addNameServerIP !== '' && addZoneName !== '' && addDomainName !== '' && addTTL !== '' && addIP !== '') {
+        if (addNameServerIP !== '' && addZoneName !== '' && addDomainName !== '' && addTTL !== '' && addIP !== '' && addKey !== '' && addSecret !== '') {
             $('#add-a-record-btn').prop('disabled', false)
         } else {
             $('#add-a-record-btn').prop('disabled', true)
         }
 
-        if (updateNameServerIP !== '' && updateZoneName !== '' && updateDomainName !== '' && updateTTL !== '' && updateIP !== '') {
+        if (updateNameServerIP !== '' && updateZoneName !== '' && updateDomainName !== '' && updateTTL !== '' && updateIP !== '' && updateKey !== '' && updateSecret !== '' && updateARecordToUpdate !== '') {
             $('#update-a-record-btn').prop('disabled', false)
         } else {
             $('#update-a-record-btn').prop('disabled', true)
         }
 
-        if (deleteNameServerIP !== '' && deleteZoneName !== '' && deleteDomainName !== '') {
+        if (deleteNameServerIP !== '' && deleteZoneName !== '' && deleteDomainName !== '' && deleteKey !== '' && deleteSecret !== '') {
             $('#delete-a-record-btn').prop('disabled', false)
         } else {
             $('#delete-a-record-btn').prop('disabled', true)
         }
     }
 
-    $('#add-nameserver-ip, #add-zone-name, #add-domain-name, #add-ttl, #add-ip').on('input change', checkInputs);
-    $('#update-nameserver-ip, #update-zone-name, #update-domain-name, #update-ttl, #update-new-ip').on('input change', checkInputs);
-    $('#delete-nameserver-ip, #delete-zone-name, #delete-domain-name').on('input change', checkInputs);
+    $('#add-nameserver-ip, #add-zone-name, #add-domain-name, #add-ttl, #add-ip, #add-key, #add-secret').on('input change', checkInputs);
+    $('#update-nameserver-ip, #update-zone-name, #update-domain-name, #update-ttl, #update-new-ip, #update-key, #update-secret, #update-a-record-to-update').on('input change', checkInputs);
+    $('#delete-nameserver-ip, #delete-zone-name, #delete-domain-name, #delete-key, #delete-secret').on('input change', checkInputs);
 
     checkInputs()
 
@@ -83,6 +91,8 @@ $(document).ready(function () {
         const domainName = $('#add-domain-name').val();
         const ttl = $('#add-ttl').val();
         const ip = $('#add-ip').val();
+        const key = $('#add-key').val();
+        const secret = $('#add-secret').val();
 
         $.ajax({
             url: addRecordUrl,
@@ -93,7 +103,9 @@ $(document).ready(function () {
                 zone_name: zoneName,
                 domain_name: domainName,
                 ttl: ttl,
-                ip: ip
+                ip: ip,
+                key: key,
+                secret: secret
             }),
             beforeSend: function () {
                 $('#add-a-record-loader').show();
@@ -126,6 +138,9 @@ $(document).ready(function () {
         const domainName = $('#update-domain-name').val();
         const ttl = $('#update-ttl').val();
         const newIP = $('#update-new-ip').val();
+        const key = $('#update-key').val();
+        const secret = $('#update-secret').val();
+        const aRecordToUpdate = $('#update-a-record-to-update').val()
 
         $.ajax({
             url: updateRecordUrl,
@@ -136,7 +151,11 @@ $(document).ready(function () {
                 zone_name: zoneName,
                 domain_name: domainName,
                 ttl: ttl,
-                new_ip: newIP
+                new_ip: newIP,
+                key: key,
+                secret: secret,
+                a_record_to_update: aRecordToUpdate
+
             }),
             beforeSend: function () {
                 $('#update-a-record-loader').show();
@@ -166,6 +185,8 @@ $(document).ready(function () {
         const nameServerIP = $('#delete-nameserver-ip').val();
         const zoneName = $('#delete-zone-name').val();
         const domainName = $('#delete-domain-name').val();
+        const key = $('#delete-key').val();
+        const secret = $('#delete-secret').val();
 
         $.ajax({
             url: deleteRecordUrl,
@@ -174,7 +195,9 @@ $(document).ready(function () {
             data: JSON.stringify({
                 nameserver_ip: nameServerIP,
                 zone_name: zoneName,
-                domain_name: domainName
+                domain_name: domainName,
+                key: key,
+                secret: secret
             }),
             beforeSend: function () {
                 $('#delete-a-record-loader').show();

@@ -48,6 +48,14 @@
                     <label for="add-ip" class="update-zone-file-label">IP Address:</label>
                     <input class="update-zone-file-input" type="text" id="add-ip" placeholder="192.0.2.1" required>
 
+                    <label for="add-key" class="update-zone-file-label">Key Name:</label>
+                    <input class="update-zone-file-input" type="text" id="add-key" placeholder="Enter key in conf.local"
+                           required>
+
+                    <label for="add-secret" class="update-zone-file-label">Secret:</label>
+                    <input class="update-zone-file-input" type="text" id="add-secret" placeholder="8ZvUXYbyQJfIIVTn=="
+                           required>
+
                     <button type="submit" id="add-a-record-btn" class="update-zone-file-btn">Add A Record</button>
 
                     <p id="add-a-record-info" class="add-a-record-info" hidden="hidden"></p>
@@ -82,6 +90,21 @@
                     <input class="update-zone-file-input" type="text" id="update-new-ip" placeholder="203.0.113.1"
                            required>
 
+                    <label for="update-a-record-to-update" class="update-zone-file-label">A Record To Update:</label>
+                    <input class="update-zone-file-input" type="text" id="update-a-record-to-update"
+                           placeholder="www.example.com A"
+                           required>
+
+                    <label for="update-key" class="update-zone-file-label">Key Name:</label>
+                    <input class="update-zone-file-input" type="text" id="update-key"
+                           placeholder="Enter key in conf.local"
+                           required>
+
+                    <label for="update-secret" class="update-zone-file-label">Secret:</label>
+                    <input class="update-zone-file-input" type="text" id="update-secret"
+                           placeholder="8ZvUXYbyQJfIIVTn=="
+                           required>
+
                     <button type="submit" id="update-a-record-btn" class="update-zone-file-btn">Update A Record</button>
 
                     <p id="update-a-record-info" class="update-a-record-info" hidden="hidden"></p>
@@ -104,9 +127,19 @@
                     <input class="update-zone-file-input" type="text" id="delete-zone-name"
                            placeholder="Enter zone name" required>
 
-                    <label for="delete-domain-name" class="update-zone-file-label">Domain Name:</label>
+                    <label for="delete-domain-name" class="update-zone-file-label">A Record to Delete:</label>
                     <input class="update-zone-file-input" type="text" id="delete-domain-name"
-                           placeholder="www.example.com" required>
+                           placeholder="www.example.com A" required>
+
+                    <label for="delete-key" class="update-zone-file-label">Key Name:</label>
+                    <input class="update-zone-file-input" type="text" id="delete-key"
+                           placeholder="Enter key in conf.local"
+                           required>
+
+                    <label for="delete-secret" class="update-zone-file-label">Secret:</label>
+                    <input class="update-zone-file-input" type="text" id="delete-secret"
+                           placeholder="8ZvUXYbyQJfIIVTn=="
+                           required>
 
                     <button type="submit" id="delete-a-record-btn" class="update-zone-file-btn">Delete A Record</button>
 
