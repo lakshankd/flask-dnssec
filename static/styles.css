@@ -650,6 +650,21 @@ form button:hover {
     cursor: not-allowed;
 }
 
+.sign-zone-info-content {
+    color: #5a5a5a;
+    font-size: 12px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-left: 4px solid #000000;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+    text-align: left;
+    line-height: 2;
+}
+
+
 /* End Sign Zone */
 
 /* Apply Changes */

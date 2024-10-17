@@ -403,7 +403,7 @@ def sign_zone_request():
     return jsonify({
         'success': True,
         'message': 'Zone successfully signed',
-        'output': output
+        'output': output.replace("\n", "</br>")
     }), 200
 
 
@@ -629,8 +629,6 @@ def get_statistics():
 
     if error:
         return jsonify({'error': f"Error running command: {error}"}), 500
-
-    print(output)
 
     return jsonify({
         'success': True,

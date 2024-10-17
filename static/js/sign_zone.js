@@ -16,6 +16,8 @@ $(document).ready(function () {
 
     checkInputs();
 
+    $('#sing-zone-info-content').hide();
+
     $('#sign-zone-btn').click(function () {
         const origin = $('#sign-zone-origin').val();
         const keysDirectory = $('#sign-zone-keys-directory').val();
@@ -36,8 +38,12 @@ $(document).ready(function () {
             success: function (response) {
                 $('#sign-zone-info')
                     .addClass('success-backup-message')
-                    .html(`<i class="fa fa-check-circle"></i> ${response.message + ". Output: " + response.output}`)
+                    .html(`<i class="fa fa-check-circle"></i> ${response.message}`)
                     .show();
+
+                $('#sing-zone-info-content')
+                    .html(response.output)
+                    .show()
             },
             error: function (xhr) {
                 const errorResponse = xhr.responseJSON ? xhr.responseJSON.error : 'An error occurred';
