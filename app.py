@@ -465,7 +465,21 @@ def apply_changes_request():
 
     current_zone_block = named_conf_content[zone_block_start:zone_block_end]
 
-    modified_zone_block = current_zone_block
+    file_pattern = f'file "/etc/bind/zones/db.{domain_name}"'
+
+    if file_pattern in current_zone_block:
+        modified_zone_block = current_zone_block.replace(
+            file_pattern,
+            f'file "/etc/bind/zones/db.{domain_name}.signed"'
+        )
+    else:
+        if f'file "/etc/bind/zones/db.{domain_name}.signed"' not in current_zone_block:
+            modified_zone_block = current_zone_block.rstrip(
+                '};') + f'\n    file "/etc/bind/zones/db.{domain_name}.signed";\n}}'
+        else:
+            modified_zone_block = current_zone_block
+
+    # modified_zone_block = current_zone_block
 
     key_directory_match = re.search(r'key-directory\s+"[^"]+";', modified_zone_block)
 
@@ -480,36 +494,6 @@ def apply_changes_request():
     else:
         modified_zone_block = modified_zone_block.rstrip('\n ').rstrip(
             '};') + f'{indentation}key-directory "/etc/bind/keys";\n}}'
-
-    auto_dnssec_match = re.search(r'dnssec-policy\s+"?[^";]+"?;', modified_zone_block)
-
-    existing_lines = re.findall(r'^\s+', modified_zone_block, re.MULTILINE)
-    if existing_lines:
-        indentation = existing_lines[0]
-    else:
-        indentation = "    "
-
-    if auto_dnssec_match:
-        modified_zone_block = re.sub(r'dnssec-policy\s+"?[^";]+"?;', f'{indentation}dnssec-policy default;',
-                                     modified_zone_block)
-    else:
-        modified_zone_block = modified_zone_block.rstrip('\n ').rstrip(
-            '};') + f'{indentation}dnssec-policy default;\n}}'
-
-    inline_signing_match = re.search(r'inline-signing\s+"?[^";]+"?;', modified_zone_block)
-
-    existing_lines = re.findall(r'^\s+', modified_zone_block, re.MULTILINE)
-    if existing_lines:
-        indentation = existing_lines[0]
-    else:
-        indentation = "    "
-
-    if inline_signing_match:
-        modified_zone_block = re.sub(r'inline-signing\s+"?[^";]+"?;', f'{indentation}inline-signing yes;',
-                                     modified_zone_block)
-    else:
-        modified_zone_block = modified_zone_block.rstrip('\n ').rstrip(
-            '};') + f'{indentation}inline-signing yes;\n}}'
 
     modified_named_conf_content = (named_conf_content[:zone_block_start] +
                                    modified_zone_block +
@@ -575,7 +559,7 @@ def apply_changes_request():
     if reload_error:
         return jsonify({'error': f"Error reloading BIND configuration: {reload_error}"}), 500
 
-    rndc_command = f'rndc dnssec -status {domain_name}'
+    rndc_command = f'rndc signing -list {domain_name}'
     rndc_output, rndc_error = execute_ssh_command(rndc_command)
 
     if rndc_error:
@@ -622,6 +606,20 @@ def get_statistics():
         command = f"dig DNSKEY {domain} @{hostname} +dnssec +multi"
     elif command_selected == 'soa':
         command = f"dig SOA {domain} @{hostname} +dnssec +multi"
+    elif command_selected == 'rrsig':
+        command = f"dig RRSIG {domain} @{hostname} +dnssec +multi"
+    elif command_selected == 'a':
+        command = f"dig A {domain} @{hostname} +dnssec +multi"
+    elif command_selected == 'aaaa':
+        command = f"dig AAAA {domain} @{hostname} +dnssec +multi"
+    elif command_selected == 'mx':
+        command = f"dig MX {domain} @{hostname} +dnssec +multi"
+    elif command_selected == 'ns':
+        command = f"dig NS {domain} @{hostname} +dnssec +multi"
+    elif command_selected == 'ptr':
+        command = f"dig PTR {domain} @{hostname} +dnssec +multi"
+    elif command_selected == 'txt':
+        command = f"dig TXT {domain} @{hostname} +dnssec +multi"
     else:
         return jsonify({'error': 'Invalid command selected.'}), 400
 
