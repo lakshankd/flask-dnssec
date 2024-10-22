@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import paramiko
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -628,10 +628,32 @@ def get_statistics():
     if error:
         return jsonify({'error': f"Error running command: {error}"}), 500
 
+    expiration_command = f"dig +dnssec {domain} A @{hostname} | grep RRSIG | awk '{{print $9}}'"
+    expiration_output, expiration_error = execute_ssh_command(expiration_command)
+
+    if expiration_error or not expiration_output.strip():
+        return jsonify({'error': 'Could not retrieve expiration date.'}), 500
+
+    try:
+
+        expiration_date_str = expiration_output.strip()
+        expiration_date = datetime.strptime(expiration_date_str, '%Y%m%d%H%M%S')
+
+        expiration_date = expiration_date.replace(tzinfo=timezone.utc)
+
+        current_date = datetime.now(timezone.utc)
+
+        days_to_expire = (expiration_date - current_date).days
+
+    except ValueError:
+        return jsonify({'error': 'Error parsing the expiration date format.'}), 500
+
     return jsonify({
         'success': True,
         'message': 'Successfully got statistics',
-        'output': output.replace("\n", "</br>")
+        'output': output.replace("\n", "</br>"),
+        'expiration_date': expiration_date.strftime('%Y-%m-%d %H:%M:%S'),
+        'days_to_expire': days_to_expire
     }), 200
 
 

@@ -19,6 +19,7 @@ $(document).ready(function () {
     checkInputs();
 
     $('#statistics-info-content').hide();
+    $('#statistics-info-content-dates').hide();
 
     $('#get-statistics-btn').click(function () {
         const hostname = $('#statistics-hostname').val();
@@ -46,6 +47,17 @@ $(document).ready(function () {
                 $('#statistics-info-content')
                     .html(response.output)
                     .show()
+
+                $('#statistics-info-content-dates')
+                    .html(`
+                         <div class="statistics-date-message">
+                             <span class="statistics-date-highlight">RRSIG Expiration Date:</span> ${response.expiration_date}
+                         </div>
+                         <div class="statistics-date-message">
+                              <span class="statistics-date-highlight">Days Until Expiration:</span> ${response.days_to_expire} days
+                         </div>
+                    `)
+                    .show();
             },
             error: function (xhr) {
                 const errorResponse = xhr.responseJSON ? xhr.responseJSON.error : 'An error occurred';

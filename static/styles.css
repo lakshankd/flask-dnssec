@@ -843,6 +843,28 @@ form button:hover {
     line-height: 2;
 }
 
+.statistics-info-content-dates {
+    color: #333333;
+    font-size: 14px;
+    padding: 8px;
+    background-color: #f5f5f5;
+    border-left: 4px solid #0070c9;
+    border-radius: 4px;
+    margin-top: 15px;
+    text-align: left;
+    display: inline-block;
+    max-width: 100%; /* Ensures the element does not break on small screens */
+}
+
+.statistics-date-message {
+    margin-bottom: 10px;
+}
+
+.statistics-date-highlight {
+    font-weight: 600;
+    color: #0070c9; /* Matches Apple’s subtle blue tone */
+}
+
 
 /* View Statistics */
 
